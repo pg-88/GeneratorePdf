@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GeneraDocumentoService } from '../genera-documento.service';
 
 @Component({
   selector: 'app-home',
@@ -7,6 +8,14 @@ import { Component } from '@angular/core';
 })
 export class HomePage {
 
-  constructor() {}
+  constructor(
+    private doc: GeneraDocumentoService
+  ) {}
 
+  mostraPdf(){
+    /**Chiama la creazione del documento nel servizio
+     * mostra il doc creato in una finestra 
+     */
+    this.doc.creaDoc()
+  }
 }
