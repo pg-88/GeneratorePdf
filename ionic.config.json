@@ -1,0 +1,7 @@
+{
+  "name": "GeneratorePdf",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
