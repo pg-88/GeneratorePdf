@@ -1,10 +1,19 @@
 import { Injectable } from '@angular/core';
+//import { URL } from 'url';
+
 
 export interface Contenuti {
-  intestazione: {[key:string]: string[] | string},
-  piepagina: {[key:string]: string[] | string},
-  contenuto: {[key:string]: string[] | string }[],
-  header: {[key:string]: string[] | string },
+  pagina: {
+    intestazione: {
+      titolo: string,
+      logo?: Blob | string,
+    },
+    piepagina?: string,
+  }
+  tab:{
+    header: {[key:string]: string[] | string },
+    contenuto: {[key:string]: string[] | string }[],
+  }
 }
 /*-------------------------------------------------------------------------------
  *  Contenuti è pensato per ricalcare gli attributi da passare a 'autoTable'
@@ -38,17 +47,21 @@ export class DatiDocumentoService {
     //richiesta al DB
 
     //elaborazione risposta
-    
     const test: Contenuti = {
-      intestazione: {col1: 'Colonna 1', col2: 'Colonna 2', col3: 'Colonna 3'},
-      piepagina: {indirizzo: 'Azienda Pippo, Via Pluto, 42', totale: 'TOT: 1000'},
-      contenuto: [
-        {col1: 'col1-riga1', col2: 'col2-riga1', col3: 'col3-riga1'},
-        {col1: 'col1-riga2', col2: 'col2-riga2', col3: 'col3-riga2'},
-      ],
-      header:{col1: 'Colonna 1', col2: 'Colonna 2', col3: 'Colonna 3'},
+      pagina: {
+        intestazione: {
+          titolo: "Hello",
+          logo: 'https://ih1.redbubble.net/image.424611934.8062/st,small,507x507-pad,600x600,f8f8f8.jpg'
+        }
+      },
+      tab: {
+        contenuto: [
+          {col1: 'col1-riga1', col2: 'col2-riga1', col3: 'col3-riga1'},
+          {col1: 'col1-riga2', col2: 'col2-riga2', col3: 'col3-riga2'},
+        ],
+        header:{col1: 'Colonna 1', col2: 'Colonna 2', col3: 'Colonna 3'},
+      }
     }
-
     return test;
   }
 
