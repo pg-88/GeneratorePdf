@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import { autoTable, jsPDFConstructor } from 'jspdf-autotable';
-import { ConfigDoc, ConfigDocumentoService } from './config-documento.service';
+import { ConfigDocumentoService } from './config-documento.service';
 import { DatiDocumentoService } from './dati-documento.service';
 
 @Injectable({
@@ -21,7 +21,7 @@ export class GeneraDocumentoService {
   ){};
 
   creaDoc(){
-    const conf = this.docConf.getDataConfig();
+    const conf = this.docConf.getDocConfig();
     const dati = this.docDati.getDati();
     
     let doc = (conf.init != null ? new jsPDF(conf.init) : new jsPDF());

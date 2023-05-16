@@ -1,29 +1,25 @@
 import { Injectable } from '@angular/core';
-import { Config } from '@ionic/angular';
 
-export interface ConfigDoc{
-  init?:{
-    //oggetto da passare al costruttore di jsPDF vedi https://artskydj.github.io/jsPDF/docs/jsPDF.html
-    orientation?: orientamentoPag | undefined,
-    format?: string | number[] | undefined,
-  } | undefined,
-  
-  page: {
-    nomeFile: string | undefined,
-    lingua?: string
-  } | undefined,
-  
-  style?: {
-    font?: string | undefined
-    fontStyle?: string | undefined
-  } | undefined,
-  tableStyle?: {
 
-  }
 
+export interface PdfOption {
+  orientation?: string,
+  unit?: string,
+  format?: string,
+  precision?: number,
+  userUnit?: number
 }
 
-type orientamentoPag = 'landscape' | 'portrait' | 'l' | 'p';
+export interface autoTableStyle {
+  theme?: string, //'striped'|'grid'|'plain'
+  styles?: any,
+  headStyles?: any,
+  bodyStyle?: any,
+  footStyle?: any,
+  alternateRowStyles?: any,
+  columnStyle?: any
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -33,10 +29,23 @@ export class ConfigDocumentoService {
    *  Args: 
    *  ???? serviranno credenziali e indirizzo per il db ????
    */
+  private mockResponse: any;
+
 
   constructor() { }
 
-  getDataConfig(){
+  async dbRequest(){
+    const response = new Promise((res, rej) => { 
+      setTimeout(res, 2000);
+      this.mockResponse = {
+        orientamento: 'verticale',
+        foglio: 'a4',
+        font: 'arial',
+      }
+    });
+  }
+
+  getDocConfig(): PdfOption {
     /**Chiamata al DB per recuperare i dati che serviranno a generare il documento
      * Restituisce un oggetto del tipo ConfigDoc che sarà utilizzato per 
      * definire le caratteristiche del documento.
@@ -52,22 +61,8 @@ export class ConfigDocumentoService {
       dimensione: 'a3',
       font: 'Arial'
     }
+    return {
 
-
-    const conf: ConfigDoc = {
-      //Ricalca jsPDFOption 
-      init: {
-        orientation: (response.verticale ? 'p' : 'l'),
-        format: response.dimensione,
-      },
-      page: {
-        nomeFile: (
-          response.filename.endsWith('.pdf') ? 
-          response.filename : 
-          response.filename.concat('.pdf')
-        ),
-      }
-    }
-    return conf;
+    };
   }
 }
