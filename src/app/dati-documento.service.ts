@@ -15,6 +15,16 @@ export interface Contenuti {
     contenuto: {[key:string]: string[] | string }[],
   }
 }
+
+export interface PagDati {
+  titolo?: string | string[],
+  logo?: Blob | string
+}
+
+export interface tabDati {
+  body: {[key:string]: string[] | string }[],
+  //TO DO Completa interfaccia tabDati
+}
 /*-------------------------------------------------------------------------------
  *  Contenuti è pensato per ricalcare gli attributi da passare a 'autoTable'
  *  vedi documentazione https://github.com/simonbengtsson/jsPDF-AutoTable#usage
@@ -43,7 +53,7 @@ export class DatiDocumentoService {
   /**Recupera dati da inserire nel documento*/
   constructor() { }
 
-  getDati(): Contenuti {
+  get pagDati(): Contenuti {
     //richiesta al DB
 
     //elaborazione risposta

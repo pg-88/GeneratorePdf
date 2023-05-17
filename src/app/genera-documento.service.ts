@@ -1,8 +1,51 @@
 import { Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
-import { autoTable, jsPDFConstructor } from 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { ConfigDocumentoService } from './config-documento.service';
 import { DatiDocumentoService } from './dati-documento.service';
+import { outputAst } from '@angular/compiler';
+
+
+class Geometria {
+  private width: number
+  private height: number
+
+  constructor(larghezza?: number, altezza?: number){
+    this.height = altezza ?? 1;
+    this.width = larghezza ?? 1;
+  }
+
+  set larghezza(w: number){
+    this.width = w;
+  }
+  
+  set altezza(h: number){
+    this.height = h;
+  }
+
+  get topLeft() {
+    return{
+      startX: 0,
+      startY: 0,
+      endX: (this.width / 3),
+      endY: (this.height / 3)
+    }
+  }
+
+  get topCenter(){
+    let tc = this.topLeft;
+    tc.startX = tc.endX;
+    tc.endX = tc.startX + (this.width / 3);
+    return tc;
+  }
+  
+  get topRight(){
+    let tr = this.topCenter;
+    tr.startX = tr.endX;
+    tr.endX = this.width;
+    return tr;
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -18,29 +61,60 @@ export class GeneraDocumentoService {
   constructor(
     private docConf: ConfigDocumentoService,
     private docDati: DatiDocumentoService,
-  ){};
+  ){
+    this.geom = new Geometria();
+  };
 
-  creaDoc(){
-    const conf = this.docConf.getDocConfig();
-    const dati = this.docDati.getDati();
-    
-    let doc = (conf.init != null ? new jsPDF(conf.init) : new jsPDF());
+  private doc!: jsPDF;
+  private geom: Geometria;
 
-    //console.log(doc);
-    console.log(Object.keys(conf), Object.values(conf));
-    console.log(Object.keys(dati), Object.values(dati));
-    console.log('page info',doc.getPageInfo(1));
-    console.log('Font', doc.getFontList());
 
-    //inserire titolo pagina
-    doc.setFont('Times');
-    
-    doc.text(dati.pagina.intestazione.titolo,10 ,10)
+  creaDoc() {
+    const optn: object = this.docConf.docConfig;
+    console.log('questo deve essere passato al jsPDF', optn);
 
-    //generare il pdf e mostra in nuova tab
-    //doc.output('pdfobjectnewwindow', {filename: conf.page?.nomeFile});
-    console.log(conf.page?.nomeFile);
-    const n: string = (conf.page?.nomeFile != undefined ? conf.page?.nomeFile : 'Documento.pdf');
-    doc.output('pdfobjectnewwindow');
+    this.doc = new jsPDF(optn);
+
+    console.log('page info pag1', this.doc.getPageInfo(1));
+    console.log('obj jspdf', this.doc);
+    console.log('obj jspdf', this.doc.getFontList());
+
+    this.geom.altezza = this.doc.internal.pageSize.height;
+    this.geom.larghezza = this.doc.internal.pageSize.width;
+
+    console.log('top center', this.geom.topCenter);
+
+    //this.doc.setFont('ZapfDingbats');
+    this.doc.setFontSize(this.docConf.docStyle.titleSize ?? 21);
+    this.doc.text("Hello World!", this.geom.topCenter.startX, this.geom.topCenter.endY/2);
+
+    this.doc.output('pdfobjectnewwindow');
+
   }
+
+  titolo(){
+    /**Aggiunge il titolo alla pagina */
+
+  }
+
+  logo(){
+
+
+  }
+
+  tabella() {
+  
+  }
+
+  piePagina(){
+
+
+  }
+
+  output(){
+
+  }
+
+
+
 }
