@@ -1,49 +1,20 @@
 import { Injectable } from '@angular/core';
+import { ColdObservable } from 'rxjs/internal/testing/ColdObservable';
 //import { URL } from 'url';
 
-
-export interface Contenuti {
-  pagina: {
-    intestazione: {
-      titolo: string,
-      logo?: Blob | string,
-    },
-    piepagina?: string,
-  }
-  tab:{
-    header: {[key:string]: string[] | string },
-    contenuto: {[key:string]: string[] | string }[],
-  }
-}
 
 export interface PagDati {
   titolo?: string | string[],
   logo?: Blob | string
+  altro?: string | string[] | object
 }
 
-export interface tabDati {
-  body: {[key:string]: string[] | string }[],
-  //TO DO Completa interfaccia tabDati
+export interface TabDati {
+  head?: string [] | object[],
+  body?:  string [] | object[],
+  foot?:  string [] | object[],
+  columns?:  string [] | object[],
 }
-/*-------------------------------------------------------------------------------
- *  Contenuti è pensato per ricalcare gli attributi da passare a 'autoTable'
- *  vedi documentazione https://github.com/simonbengtsson/jsPDF-AutoTable#usage
- *  In particolare con la sintassi:
- *  
- * autoTable(doc, {
-      columnStyles: { europe: { halign: 'center' } }, // European countries centered
-      body: [
-        { europe: 'Sweden', america: 'Canada', asia: 'China' },
-        { europe: 'Norway', america: 'Mexico', asia: 'Japan' },
-      ],
-      columns: [
-        { header: 'Europe', dataKey: 'europe' },
-        { header: 'Asia', dataKey: 'asia' },
-      ],
-    })
- *  Quindi utilizzo gli attributi body e column per passare i dati e da columnStyles
- *  posso richiamare il nome delle colonne per assegnare lo stile.*/
-
 
 @Injectable({
   providedIn: 'root'
@@ -53,27 +24,79 @@ export class DatiDocumentoService {
   /**Recupera dati da inserire nel documento*/
   constructor() { }
 
-  get pagDati(): Contenuti {
-    //richiesta al DB
+  get testaPag(): PagDati{
+    //elaborazione dati ricevuti
 
-    //elaborazione risposta
-    const test: Contenuti = {
-      pagina: {
-        intestazione: {
+    
+    //oggetto contenente i dati dell'intestazione del doc
+    const test: PagDati = {
           titolo: "Hello",
           logo: 'https://ih1.redbubble.net/image.424611934.8062/st,small,507x507-pad,600x600,f8f8f8.jpg'
         }
-      },
-      tab: {
-        contenuto: [
-          {col1: 'col1-riga1', col2: 'col2-riga1', col3: 'col3-riga1'},
-          {col1: 'col1-riga2', col2: 'col2-riga2', col3: 'col3-riga2'},
-        ],
-        header:{col1: 'Colonna 1', col2: 'Colonna 2', col3: 'Colonna 3'},
-      }
-    }
     return test;
   }
 
+  get piePag(): PagDati{
+    /**Contenuti per il piepagina */
+
+    //elaborazione dati ricevuti
+
+    //oggetto contenete dati per il piè pagina
+    const footer: PagDati = {
+      titolo: "Pagina Finita",
+      altro: ["telefono 212 555 554", "indirizzo Evergreen Terrace, 123", "P.IVA 123456789"]
+    }
+    return footer;
+  }
+
+  get datiTabella(): TabDati{
+    /**dati per inserimento in tabella */
+
+    //elaborazione dati ricevuti
+
+    //----------------------------------------------------------------|
+    //                       Test Area                                |
+    //                                                                |
+    let tabella = Object.values(this.testTab);
+    //console.log(tabella);
+    //oggetto che contiene righe colonne e header tabella 
+    const tab: TabDati = {
+      head: tabella[0],
+      body: tabella[1],
+      foot: tabella[2],
+    }
+    //console.log(tab);
+    //                                                                |
+    //----------------------------------------------------------------|
+    return tab;
+  }
+
+  private get testTab(): object {
+    //solo per testare funzionalità di generaDocumentoService
+    const righe: number = 6;
+    const colonne: number = 3;
+
+    let h: string[] = [];
+    let f: string[] = [];
+    for(let i = 0; i < colonne; i++){
+      h.push(`Header Colonna ${i+1}`);
+      i == (colonne-1) ? f.push(`Footer Colonna ${i+1}`) : '--';
+    }
+
+    let b: string[][] = []; 
+    for(let i = 0; i < righe; i++){
+      let riga = [];
+      for(let j = 0; j < colonne; j++){
+        riga.push(`cella riga_${i+1}, colonna_${j+1}`);
+      }
+      b.push(riga);
+    }
+
+    return {
+      head: h,
+      body: b,
+      foot: f,
+    };
+  }
 
 }

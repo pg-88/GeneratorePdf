@@ -67,28 +67,53 @@ export class GeneraDocumentoService {
 
   private doc!: jsPDF;
   private geom: Geometria;
+  
+  test(){
+    this.creaDoc();
+    // //verifico che sia creata la variabile doc
+    // console.log('page info pag1', this.doc.getPageInfo(1));
+    console.log('obj jspdf', this.doc);
+    // console.log('obj jspdf', this.doc.getFontList());
+  
+    //testo la classe Geometria
+    this.geom.altezza = this.doc.internal.pageSize.height;
+    this.geom.larghezza = this.doc.internal.pageSize.width;
+    
+    // console.log('top center', this.geom.topCenter);
+    
+    //provo a scrivere sul doc
+    //this.doc.setFont('ZapfDingbats');
+    this.doc.setFontSize(this.docConf.docStyle.titleSize ?? 21);
+    this.doc.text("Hello World!", this.geom.topCenter.endX, this.geom.topCenter.endY/2);
+  
+    // this.doc.output('pdfobjectnewwindow');
+
+    //configurazione documento
+    const tabOption: object = this.docDati.datiTabella;
+
+    autoTable(this.doc, {
+      //N.B. head e foot vanno passati come array di array
+      //anke se di fatto sono monodimensionali
+      head: [Object.values(tabOption)[0]],
+      foot: [Object.values(tabOption)[2]],
+      body: Object.values(tabOption)[1],
+      startY: this.geom.topLeft.endY
+    });
+
+    //output test
+    this.doc.output('pdfobjectnewwindow');
+
+
+
+  }
 
 
   creaDoc() {
     const optn: object = this.docConf.docConfig;
-    console.log('questo deve essere passato al jsPDF', optn);
+    // console.log('questo deve essere passato al jsPDF', optn);
 
     this.doc = new jsPDF(optn);
 
-    console.log('page info pag1', this.doc.getPageInfo(1));
-    console.log('obj jspdf', this.doc);
-    console.log('obj jspdf', this.doc.getFontList());
-
-    this.geom.altezza = this.doc.internal.pageSize.height;
-    this.geom.larghezza = this.doc.internal.pageSize.width;
-
-    console.log('top center', this.geom.topCenter);
-
-    //this.doc.setFont('ZapfDingbats');
-    this.doc.setFontSize(this.docConf.docStyle.titleSize ?? 21);
-    this.doc.text("Hello World!", this.geom.topCenter.startX, this.geom.topCenter.endY/2);
-
-    this.doc.output('pdfobjectnewwindow');
 
   }
 

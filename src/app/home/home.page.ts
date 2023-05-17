@@ -16,6 +16,6 @@ export class HomePage {
     /**Chiama la creazione del documento nel servizio
      * mostra il doc creato in una finestra 
      */
-    this.doc.creaDoc()
+    this.doc.test();
   }
 }

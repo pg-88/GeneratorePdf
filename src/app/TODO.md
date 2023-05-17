@@ -1,0 +1,5 @@
+- [ ] Ridefinire interfaces per i dati tabella: per head foot e body devono essere array di array
+- [ ] valutare se e come implementare opzione columns di autoTable
+- [ ] creare service per gestire le chiamate al database (per il momento sarà un fake)
+- [ ] testare e scrivere funzioni per gli stili
+- [ ] testare e scrivere funzioni per GeneraDocumentoService

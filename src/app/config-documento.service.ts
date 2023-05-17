@@ -80,7 +80,8 @@ export class ConfigDocumentoService {
   }
 
   get docConfig(): PdfOption {
-    /**Genera e ritorna un oggetto con i parametri per la creazione del pdf*/
+    /**Documento -> Configurazione
+     * Genera e ritorna un oggetto con i parametri per la creazione del pdf*/
     
     const conf = {
       orientation: this.mockResponse.orientamento,
@@ -91,7 +92,8 @@ export class ConfigDocumentoService {
   }
 
   get docStyle(): PdfStyle{
-    /**Genera e ritorna un oggetto per la definizione dello stile generale del pdf,
+    /**Documento -> Stile
+     * Genera e ritorna un oggetto per la definizione dello stile generale del pdf,
      * per lo stile della tabella c'è un oggetto più specifico
     */
 
@@ -106,7 +108,8 @@ export class ConfigDocumentoService {
   }
 
   get tabOption(): autoTableOption {
-    /**Genera e ritorna un oggetto per la definizione dello stile generale della tabella
+    /**Tabella -> Opzioni
+     * Genera e ritorna un oggetto per la definizione dello stile generale della tabella
      * 
     */
 
@@ -120,7 +123,8 @@ export class ConfigDocumentoService {
   }
 
   get tabStyle(): autoTableStyle{
-    /**Genera e ritorna oggetto per lo stile genrale della tabella.
+    /**Tabella -> Stile
+     * Genera e ritorna oggetto per lo stile genrale della tabella.
      */
     
     const tabStyle: autoTableStyle = {
