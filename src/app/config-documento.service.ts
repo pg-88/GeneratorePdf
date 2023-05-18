@@ -32,12 +32,19 @@ export interface autoTableOption {
 export interface autoTableStyle{
   //per essere passato dentro a style o headStyle o footStyle
   //in option di autoTable
-  font?: string,
-  fontStyle?: 'normal'|'bold'|'italic'|'bolditalic',
-  overflow?: 'linebreak'|'ellipsize'|'visible'|'hidden',
-  fillColor?: number | number[] | string,
-  textColor?: number | number[] | string,
+  font?: string
+  fontStyle?: 'normal'|'bold'|'italic'|'bolditalic'
+  overflow?: 'linebreak'|'ellipsize'|'visible'|'hidden'
+  fillColor?: number | number[] | string
+  textColor?: number | number[] | string
   fontSize?: number
+  cellWidth?: 'auto'|'wrap'|number
+  minCellWidth?: number
+  minCellHeight?: number 
+  halign?: 'left'|'center'|'right'
+  valign?: 'top'|'middle'|'bottom'
+  lineColor?: any
+  lineWidth?: number // If 0, no border is drawn
 }
 
 
@@ -49,46 +56,31 @@ export class ConfigDocumentoService {
    *  Args: 
    *  ???? serviranno credenziali e indirizzo per il db ????
    */
-  private mockResponse: any;
-
 
   constructor() {
-    this.dbRequest();
+    //this.dbRequest();
    }
 
-  async dbRequest(){
-    //chiamata al db
-    const request = 'url';
+  dbRequest(){
+    return {
 
-    const response = new Promise((res, rej) => { 
-      /**Chiamata al DB per recuperare i dati che serviranno a generare il documento
-       * Restituisce un oggetto del tipo ConfigDoc che sarà utilizzato per 
-       * definire le caratteristiche del documento.
-      */
-      setTimeout(res, 2000);
-      this.mockResponse = {
-        orientamento: 'verticale',
-        foglio: 'a4',
-        font: 'arial',
-      }
-    });
-    response.then((val) => {
-      this.mockResponse = val
-    })
-
-    console.log('response',response,'\nmockResponse ',  this.mockResponse)
+    }
   }
 
   get docConfig(): PdfOption {
     /**Documento -> Configurazione
      * Genera e ritorna un oggetto con i parametri per la creazione del pdf*/
     
+    //interrogo il database
+    const response = this.dbRequest();
+
     const conf = {
-      orientation: this.mockResponse.orientamento,
-      format: this.mockResponse.foglio
+      orientation: 'p',
+      format: 'a4',
+      unit: 'mm'
     }
     console.log('option pdf', conf);
-    return {};
+    return conf;
   }
 
   get docStyle(): PdfStyle{
@@ -114,24 +106,28 @@ export class ConfigDocumentoService {
     */
 
     //elaborazione 
-    const tabOption = {
+    let parametriInArrivo = {
+      tema: 'grid',
+    };
+    let assigned = Object.keys(parametriInArrivo);
+    console.log('Fine elaboazione risposta: ', assigned);
+    let tableOption: autoTableOption = {
       theme: 'grid',
-
+      headStyles: this.testStyleHead,
+      alternateRowStyles: this.testStyleBody
     }
-    console.log('table option', tabOption);
-    return tabOption;
+
+    return tableOption;
   }
 
-  get tabStyle(): autoTableStyle{
-    /**Tabella -> Stile
-     * Genera e ritorna oggetto per lo stile genrale della tabella.
-     */
-    
-    const tabStyle: autoTableStyle = {
-      font: 'Arial',
-      textColor: '#0f0f0f'
-    }
-    console.log('table style', tabStyle);
-    return tabStyle;
+  private testStyleHead: autoTableStyle = {
+    fillColor: 'coral',
+    fontStyle: 'bold',
+    textColor: '#000066'
+  }
+  private testStyleBody: autoTableStyle = {
+    fillColor: '#ffffb3',
+    halign: 'right',
+    textColor: '#000066'
   }
 }

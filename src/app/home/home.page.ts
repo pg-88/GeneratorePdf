@@ -8,6 +8,8 @@ import { GeneraDocumentoService } from '../genera-documento.service';
 })
 export class HomePage {
 
+  selezioneTema: string = '';
+
   constructor(
     private doc: GeneraDocumentoService
   ) {}
@@ -16,6 +18,18 @@ export class HomePage {
     /**Chiama la creazione del documento nel servizio
      * mostra il doc creato in una finestra 
      */
+    this.doc.creaDoc();
+  }
+
+  generaTest(){
     this.doc.test();
+  }
+
+  onInput(e: any){
+    console.log('Input è successo un ionInput!!!', e);
+  }
+  onChange(e: any){
+    console.log('Change è successo un ionChange!!!', e);
+    console.log(e.detail?.value);
   }
 }

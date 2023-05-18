@@ -13,5 +13,22 @@
     </ion-toolbar>
   </ion-header>
   <ion-button (click)="mostraPdf()">Genera PDF</ion-button>
+  <ion-item>
+    <ion-select 
+      label="theme" 
+      placeholder="seleziona un opzione per il tema della tabella"
+      [value]="selezioneTema" 
+      (ionInput)="onInput($event)"
+      (ionChange)="onChange($event)">
+
+      <ion-select-option value="">Scegli un layout</ion-select-option>
+      <ion-select-option value="grid">Griglia</ion-select-option>
+      <ion-select-option value="striped">Righe alernate</ion-select-option>
+      <ion-select-option value="plain">Plain</ion-select-option>
+    
+    </ion-select>
+    
+    <ion-button (click)="generaTest()" >-- TEST --</ion-button>
+  </ion-item>
 
 </ion-content>

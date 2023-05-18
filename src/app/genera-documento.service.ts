@@ -61,12 +61,10 @@ export class GeneraDocumentoService {
   constructor(
     private docConf: ConfigDocumentoService,
     private docDati: DatiDocumentoService,
-  ){
-    this.geom = new Geometria();
-  };
+  ){};
 
   private doc!: jsPDF;
-  private geom: Geometria;
+  private geom!: Geometria;
   
   test(){
     this.creaDoc();
@@ -88,37 +86,28 @@ export class GeneraDocumentoService {
   
     // this.doc.output('pdfobjectnewwindow');
 
-    //configurazione documento
-    const tabOption: object = this.docDati.datiTabella;
-
-    autoTable(this.doc, {
-      //N.B. head e foot vanno passati come array di array
-      //anke se di fatto sono monodimensionali
-      head: [Object.values(tabOption)[0]],
-      foot: [Object.values(tabOption)[2]],
-      body: Object.values(tabOption)[1],
-      startY: this.geom.topLeft.endY
-    });
+    //Test tabella()
+    let optn = this.tabella();
+    autoTable(this.doc, optn);
 
     //output test
     this.doc.output('pdfobjectnewwindow');
-
-
-
   }
 
 
   creaDoc() {
     const optn: object = this.docConf.docConfig;
     // console.log('questo deve essere passato al jsPDF', optn);
-
+    
+    //inizializzo l'oggetto jsPDF:
     this.doc = new jsPDF(optn);
-
-
+    //inizializzo l'oggetto geometria:
+    this.geom = new Geometria(this.doc.internal.pageSize.width, this.doc.internal.pageSize.height);
   }
 
   titolo(){
     /**Aggiunge il titolo alla pagina */
+
 
   }
 
@@ -128,7 +117,33 @@ export class GeneraDocumentoService {
   }
 
   tabella() {
-  
+    /**Genera l'oggetto UserOption da passare ad autoTable
+     * Prende dai servizi docConfig e da docData, lo stile 
+     * e i dati rispettivamente; quindi compone in un unico
+     * oggetto.
+    */
+    let userOption: object = new Object();
+    //Dati
+     let data = {
+      //Dati
+      head: this.docDati.datiTabella.head,
+      body: this.docDati.datiTabella.body,
+      foot: this.docDati.datiTabella.foot,      
+    };
+
+    
+    //Stile
+    
+    //Geometria
+    let geom = {
+      tableWidth: 100,
+      margin: 5,
+      startY: this.geom.topLeft.endY
+    }
+    
+    Object.assign(userOption, data, this.docConf.tabOption, geom);
+    
+    return userOption;
   }
 
   piePagina(){

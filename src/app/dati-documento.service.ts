@@ -10,9 +10,9 @@ export interface PagDati {
 }
 
 export interface TabDati {
-  head?: string [] | object[],
-  body?:  string [] | object[],
-  foot?:  string [] | object[],
+  head?: string [][],
+  body?: string [][],
+  foot?: string [][],
   columns?:  string [] | object[],
 }
 
@@ -57,17 +57,18 @@ export class DatiDocumentoService {
     //----------------------------------------------------------------|
     //                       Test Area                                |
     //                                                                |
-    let tabella = Object.values(this.testTab);
-    //console.log(tabella);
-    //oggetto che contiene righe colonne e header tabella 
-    const tab: TabDati = {
-      head: tabella[0],
-      body: tabella[1],
-      foot: tabella[2],
-    }
+    // let tabella = Object.values(this.testTab);
+    // //console.log(tabella);
+    // //oggetto che contiene righe colonne e header tabella 
+    // const tab: TabDati = {
+    //   head: tabella[0],
+    //   body: tabella[1],
+    //   foot: tabella[2],
+    // }
     //console.log(tab);
     //                                                                |
     //----------------------------------------------------------------|
+    const tab = this.testTab
     return tab;
   }
 
@@ -80,7 +81,7 @@ export class DatiDocumentoService {
     let f: string[] = [];
     for(let i = 0; i < colonne; i++){
       h.push(`Header Colonna ${i+1}`);
-      i == (colonne-1) ? f.push(`Footer Colonna ${i+1}`) : '--';
+      i == (colonne-1) ? f.push(`Footer Colonna ${i+1}`) : f.push('--');
     }
 
     let b: string[][] = []; 
@@ -93,9 +94,9 @@ export class DatiDocumentoService {
     }
 
     return {
-      head: h,
+      head: [h],
       body: b,
-      foot: f,
+      foot: [f],
     };
   }
 

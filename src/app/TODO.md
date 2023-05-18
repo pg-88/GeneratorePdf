@@ -1,4 +1,4 @@
-- [ ] Ridefinire interfaces per i dati tabella: per head foot e body devono essere array di array
+- [x] Ridefinire interfaces per i dati tabella: per head foot e body devono essere array di array
 
 
 - [ ] valutare se e come implementare opzione columns di autoTable
