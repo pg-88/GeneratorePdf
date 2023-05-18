@@ -3,49 +3,11 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ConfigDocumentoService } from './config-documento.service';
 import { DatiDocumentoService } from './dati-documento.service';
-import { outputAst } from '@angular/compiler';
+import { GeometriaService } from './geometria.service';
 
 
-class Geometria {
-  private width: number
-  private height: number
 
-  constructor(larghezza?: number, altezza?: number){
-    this.height = altezza ?? 1;
-    this.width = larghezza ?? 1;
-  }
 
-  set larghezza(w: number){
-    this.width = w;
-  }
-  
-  set altezza(h: number){
-    this.height = h;
-  }
-
-  get topLeft() {
-    return{
-      startX: 0,
-      startY: 0,
-      endX: (this.width / 3),
-      endY: (this.height / 3)
-    }
-  }
-
-  get topCenter(){
-    let tc = this.topLeft;
-    tc.startX = tc.endX;
-    tc.endX = tc.startX + (this.width / 3);
-    return tc;
-  }
-  
-  get topRight(){
-    let tr = this.topCenter;
-    tr.startX = tr.endX;
-    tr.endX = this.width;
-    return tr;
-  }
-}
 
 @Injectable({
   providedIn: 'root'
@@ -61,10 +23,11 @@ export class GeneraDocumentoService {
   constructor(
     private docConf: ConfigDocumentoService,
     private docDati: DatiDocumentoService,
+    private geom: GeometriaService
   ){};
 
+  //
   private doc!: jsPDF;
-  private geom!: Geometria;
   
   test(){
     this.creaDoc();
@@ -102,7 +65,7 @@ export class GeneraDocumentoService {
     //inizializzo l'oggetto jsPDF:
     this.doc = new jsPDF(optn);
     //inizializzo l'oggetto geometria:
-    this.geom = new Geometria(this.doc.internal.pageSize.width, this.doc.internal.pageSize.height);
+    //this.geom = new Geometria(this.doc.internal.pageSize.width, this.doc.internal.pageSize.height);
   }
 
   titolo(){

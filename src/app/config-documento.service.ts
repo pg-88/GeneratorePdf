@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ChiamataDBService } from './chiamata-db.service';
 
 
 export interface PdfOption {
@@ -58,21 +59,14 @@ export class ConfigDocumentoService {
    */
 
   constructor() {
-    //this.dbRequest();
    }
-
-  dbRequest(){
-    return {
-
-    }
-  }
 
   get docConfig(): PdfOption {
     /**Documento -> Configurazione
      * Genera e ritorna un oggetto con i parametri per la creazione del pdf*/
     
     //interrogo il database
-    const response = this.dbRequest();
+    
 
     const conf = {
       orientation: 'p',
