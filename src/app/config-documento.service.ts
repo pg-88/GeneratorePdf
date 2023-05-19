@@ -64,10 +64,7 @@ export class ConfigDocumentoService {
   get docConfig(): PdfOption {
     /**Documento -> Configurazione
      * Genera e ritorna un oggetto con i parametri per la creazione del pdf*/
-    
-    //interrogo il database
-    
-
+  
     const conf = {
       orientation: 'p',
       format: 'a4',

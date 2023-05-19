@@ -38,7 +38,6 @@ export class HomePage {
   }
 
   showPreview = false;
-  showError = false;
 
   datiGrezzi!: any[];
 
@@ -74,13 +73,25 @@ export class HomePage {
     const tipoDoc = e.target.value;
     this.input.tipo = tipoDoc;
   }
-
-  set preview(yn: boolean){
-    this.showPreview = yn;
-    this.showError = !yn;
-    console.log('preview:', this.preview, 'show error', this.showError)
+  //input stile - tema setter
+  set tema(i: string){
+    this.input.stile.tema = i;
   }
 
+  //input stile - tema getter
+  get tema(){
+    return this.input.stile.tema;
+  }
+
+  //input stile - tema change handler
+  changeTema(e: any){
+    this.tema = e.target.value;
+  }
+
+  //
+  set preview(yn: boolean){
+    this.showPreview = yn;
+  }
 
   get preview() {
     return this.showPreview;
@@ -106,4 +117,11 @@ export class HomePage {
     } else this.preview = false;
   }
 
+  generaConfig(){
+    /**Presi gli input dalla pagina, richiama il servizio Config
+     * per generare gli oggetti di configurazione del documento 
+    */
+
+
+  }
 }

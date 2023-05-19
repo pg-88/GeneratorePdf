@@ -36,37 +36,37 @@
     </ion-select>
   </ion-card>
 
-  <ion-alert
-    *ngIf="showError"
-    header="Errore"
-    subHeader="Qualcosa è andato storto"
-    message="Dati non trovati provare con nuovi parametri">
-  </ion-alert>
+  <ion-button (click)="recuperaVisualizza()" >-- TEST --</ion-button>
 
-  <ion-header *ngIf="showError" style="color: tomato;">Qualcosa è andato storto</ion-header>
+  <ion-header *ngIf="!preview" style="color: tomato;">Niente da vedere</ion-header>
 
   <ion-grid *ngIf="preview">
-    <ion-header *ngFor="let i of datiGrezzi">
+    <ion-row *ngFor="let i of datiGrezzi">
       {{ i }} {{ datiGrezzi }}
-    </ion-header>
+    </ion-row>
+
+    <ion-footer>
+      <ion-title>Stile Documento</ion-title>
+      <ion-item>
+        <ion-select 
+          label="Tema tabella" 
+          placeholder="seleziona un opzione per il tema della tabella"
+          (change)="changeTema($event)"
+        >
+        
+          <ion-select-option value="">Scegli un layout</ion-select-option>
+          <ion-select-option value="grid">Griglia</ion-select-option>
+          <ion-select-option value="striped">Righe alernate</ion-select-option>
+          <ion-select-option value="plain">Plain</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button (click)="generaConfig()">Salva configurazione stile</ion-button>
+
+    </ion-footer>
   </ion-grid>
 
-  <!-- <ion-item>
-    <ion-select 
-    label="theme" 
-    placeholder="seleziona un opzione per il tema della tabella"
-    [value]="input.stile.tema"
-    (ionChange)="onChange($event)">
-    
-    <ion-select-option value="">Scegli un layout</ion-select-option>
-    <ion-select-option value="grid">Griglia</ion-select-option>
-    <ion-select-option value="striped">Righe alernate</ion-select-option>
-    <ion-select-option value="plain">Plain</ion-select-option>
-    
-  </ion-select> 
-</ion-item> -->
   
-  <ion-button (click)="recuperaVisualizza()" >-- TEST --</ion-button>
 
 
 </ion-content>
