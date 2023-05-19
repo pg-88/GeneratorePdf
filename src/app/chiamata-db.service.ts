@@ -72,6 +72,6 @@ export class ChiamataDBService {
       titolo: `${raw.cliente.nome.toLocaleUpperCase()} ${this.configRaw.tipo} del ${this.configRaw.data}`,
 
     }
-    this.dati.intestazione = d;
+    this.dati.intestazione = d;//assegna la variabile intestazione in dati service
   }
 }

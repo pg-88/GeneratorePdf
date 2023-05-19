@@ -50,8 +50,8 @@ export class GeneraDocumentoService {
     // this.doc.output('pdfobjectnewwindow');
 
     //Test tabella()
-    let optn = this.tabella();
-    autoTable(this.doc, optn);
+    // let optn = this.tabella();
+    // autoTable(this.doc, optn);
 
     //output test
     this.doc.output('pdfobjectnewwindow');
@@ -79,35 +79,35 @@ export class GeneraDocumentoService {
 
   }
 
-  tabella() {
-    /**Genera l'oggetto UserOption da passare ad autoTable
-     * Prende dai servizi docConfig e da docData, lo stile 
-     * e i dati rispettivamente; quindi compone in un unico
-     * oggetto.
-    */
-    let userOption: object = new Object();
-    //Dati
-     let data = {
-      //Dati
-      head: this.docDati.datiTabella.head,
-      body: this.docDati.datiTabella.body,
-      foot: this.docDati.datiTabella.foot,      
-    };
+  // tabella() {
+  //   /**Genera l'oggetto UserOption da passare ad autoTable
+  //    * Prende dai servizi docConfig e da docData, lo stile 
+  //    * e i dati rispettivamente; quindi compone in un unico
+  //    * oggetto.
+  //   */
+  //   let userOption: object = new Object();
+  //   //Dati
+  //    let data = {
+  //     //Dati
+  //     head: this.docDati.datiTabella.head,
+  //     body: this.docDati.datiTabella.body,
+  //     foot: this.docDati.datiTabella.foot,      
+  //   };
 
     
-    //Stile
+  //   //Stile
     
-    //Geometria
-    let geom = {
-      tableWidth: 100,
-      margin: 5,
-      startY: this.geom.topLeft.endY
-    }
+  //   //Geometria
+  //   let geom = {
+  //     tableWidth: 100,
+  //     margin: 5,
+  //     startY: this.geom.topLeft.endY
+  //   }
     
-    Object.assign(userOption, data, this.docConf.tabOption, geom);
+  //   Object.assign(userOption, data, this.docConf.tabOption, geom);
     
-    return userOption;
-  }
+  //   return userOption;
+  // }
 
   piePagina(){
 

@@ -3,6 +3,7 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 if (environment.production) {
   enableProdMode();
