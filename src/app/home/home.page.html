@@ -12,7 +12,7 @@
       <ion-title size="large">Home</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-item>
+  <ion-card>
     <label for="cliente">Nome Cliente</label>
     <input
       id="cliente"
@@ -21,17 +21,37 @@
       (change)="changeName($event)"
       [value]="nome"
     />
+  </ion-card>
+  <ion-card>
     <ion-select
-      label="Tipo di Documento"
+      aria-label="Tipo Documento"
+      placeholder="Tipo di Documento"
       [value]="input.tipo"
-      (ionChange)="onChange($event)"
-    >
+      (ionChange)="changeTipo($event)"
+      labelPlacement="stacked"
+      >
       <ion-select-option value="ddt">Documento di trasporto</ion-select-option>
       <ion-select-option value="fattura">Fattura</ion-select-option>
       <ion-select-option value="altro">Altro</ion-select-option>
     </ion-select>
-  </ion-item>
-  <ion-item>
+  </ion-card>
+
+  <ion-alert
+    *ngIf="showError"
+    header="Errore"
+    subHeader="Qualcosa è andato storto"
+    message="Dati non trovati provare con nuovi parametri">
+  </ion-alert>
+
+  <ion-header *ngIf="showError" style="color: tomato;">Qualcosa è andato storto</ion-header>
+
+  <ion-grid *ngIf="preview">
+    <ion-header *ngFor="let i of datiGrezzi">
+      {{ i }} {{ datiGrezzi }}
+    </ion-header>
+  </ion-grid>
+
+  <!-- <ion-item>
     <ion-select 
     label="theme" 
     placeholder="seleziona un opzione per il tema della tabella"
@@ -43,10 +63,10 @@
     <ion-select-option value="striped">Righe alernate</ion-select-option>
     <ion-select-option value="plain">Plain</ion-select-option>
     
-  </ion-select>
+  </ion-select> 
+</ion-item> -->
   
-  <ion-button (click)="mostraInput()" >-- TEST --</ion-button>
-  <ion-button (click)="mostraPdf()">Genera PDF</ion-button>
-</ion-item>
+  <ion-button (click)="recuperaVisualizza()" >-- TEST --</ion-button>
+
 
 </ion-content>
