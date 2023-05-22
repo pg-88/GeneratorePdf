@@ -13,18 +13,14 @@ export class ChiamataDBService {
   //serviranno delle credenziali di accesso
   //forse sarà meglio metterle in environments
 
-  constructor(
-    private dati: DatiDocumentoService,
-    private config: ConfigDocumentoService,
-    private geom: GeometriaService,
-  ) { }
+  constructor() { }
 
 
   private risposta!: object;
 
   richiestaDati(nome: string, info?: object){
     //chiamata al DB la risposta viene mandata alla proprietà risposta
-    console.log(`Parte chiamata al server con parametri: ${nome} e ${Object.entries(info ?? {})}`)
+    //console.log(`Parte chiamata al server con parametri: ${nome} e ${Object.entries(info ?? {})}`)
     const r = {status: 'ok'}//status: 'ok' per simulare risposta avvenuta correttamente
     r.status == 'ok' ? this.risposta = r : this.risposta = {Errore: 'errore tipo..'}    
   }
@@ -61,12 +57,15 @@ export class ChiamataDBService {
 
   get configRaw(){
     //elabora la risposta e restituisce le configurazioni documento
+    //prima scrematura dei dati, poi c'è config documento che 
+    //si occupa di rendere totalmente digeribili i dati a genera documento
+
     const response = {
       tipo: 'DDT',
       data: '13/06/2022',
       font: 'arial',
       fontSize: 14,
-      titleSize:24,
+      titleSize: 24,
       stileTabella: 'striped',
       headerColor: 'lightgreen',
     };

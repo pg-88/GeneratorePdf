@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { GeneraDocumentoService } from '../genera-documento.service';
 import { ChiamataDBService } from '../chiamata-db.service';
+import { ConfigDocumentoService, PdfOption, PdfStyle, autoTableOption } from '../config-documento.service';
+import { DatiDocumentoService, PagDati, TabDati } from '../dati-documento.service';
+import { autoTable } from 'jspdf-autotable';
 
 
 @Component({
@@ -23,26 +26,35 @@ export class HomePage {
    *  - showPreview: booleano viene settato a true quando ci sono i dati
    *    da mostrare per la creazione del doc.
    * 
-   *  - showError: booleano viene settato a true quando arriva una risposta
-   *    non corretta e non è possibile richiamare i dati.
-   * 
-   *  -  
+   *  - datiGrezzi: contiene i dati recuperati dal DB, utilizzato dal
+   *    template per la preview
    */
   
-  input = {
+  public input = {
     nome: '',
     tipo: '',
     stile: {
       tema:'',
     },
   }
+  private showPreview = false;
 
-  showPreview = false;
+  
+  public datiTesta!: PagDati; //dati filtrati per l'intestazione del documento
+  public datiTab!: TabDati; //dati filtrati per il corpo del documento (tabella)
+  public datiPie!: PagDati; //dati filtrati per il piede del documento
 
-  datiGrezzi!: any[];
+  public paginaConf!: PdfOption; //configurazione pagina estrapolata dai dati
+  public paginaStile!: PdfStyle; //configurazioni stile estrapolata dai dati
+  public tabellaOption!: autoTableOption; //opzioni per la creazione della tabella
+
+
+
 
   constructor(
     private doc: GeneraDocumentoService,
+    private conf: ConfigDocumentoService,
+    private dati: DatiDocumentoService,
     private dbRequest: ChiamataDBService,
   ) {}
   //input nome setter
@@ -88,7 +100,7 @@ export class HomePage {
     this.tema = e.target.value;
   }
 
-  //
+  //preview -> true; mostra l'anteprima nella pagina false non 
   set preview(yn: boolean){
     this.showPreview = yn;
   }
@@ -98,30 +110,60 @@ export class HomePage {
   }
 
   recuperaVisualizza(){
-    /**Lancia la chiamata al db e fa una prima elaborazione dati per visualizzarli 
-     * sulla pagina
-     * ##TO DO## 
-     * sistemare quando abbiamo la struttura dati in arrivo dal DB.
-    */
-    console.log('da passare a Chiamata DB: ',this.input.nome, this.input.tipo);
-    this.dbRequest.richiestaDati(this.input.nome, {documento: this.input.tipo});
+    /**Lancia la chiamata al DB, quindi smista la risposta tra i vari servizi
+     * per inizializzare le proprietà */
+    //chiamata DB
+    this.dbRequest.richiestaDati(this.input.nome);
+    const resConf = this.dbRequest.configRaw;
+    const resDati = this.dbRequest.datiRaw;
 
-    console.log('dati grezzi dalla chiamata db:',this.dbRequest.datiRaw);
-    console.log(Object.keys(this.dbRequest.datiRaw).length != 0 ? `trovati i dati: ${this.dbRequest.datiRaw}` : 'niente')
-  
-    if(Object.keys(this.dbRequest.datiRaw).length != 0)//controlla se l'oggetto datiRaw è popolato
-    {
-      this.preview = true;
-      this.datiGrezzi = Object.entries(this.dbRequest.datiRaw);
-      console.log(this.datiGrezzi)
-    } else this.preview = false;
+    //filtro e assegno dati di config alle proprietà di questa classe
+    this.conf.paginaConfig = resConf;
+    this.paginaConf = this.conf.paginaConfig;
+    
+    this.conf.docStyle = resConf;
+    this.paginaStile = this.conf.docStyle;
+
+    this.conf.tabOption = resConf;
+    this.tabellaOption = this.conf.tabOption;
+
+        
+    //filtro e assegno dati del contenuto doc alle proprietà di questa classe
+    this.dati.intestazione = resDati;
+    this.datiTesta = this.dati.intestazione;
+
+    this.dati.tabella = resDati;
+    this.datiTab = this.dati.tabella;
+
+    this.dati.piepagina = resDati;
+    this.datiPie = this.dati.piepagina;
+
+    console.log(
+      'Dati documento:',
+      this.datiTesta,
+      this.datiTab,
+      this.datiPie,
+    );
+    console.log(
+      '\nDati Configurazione: ',
+      this.paginaConf,
+      this.paginaStile,
+      this.tabellaOption
+    );
+    this.preview = true;
   }
 
-  generaConfig(){
+  generaDoc(){
     /**Presi gli input dalla pagina, richiama il servizio Config
-     * per generare gli oggetti di configurazione del documento 
-    */
-
-
+     * per generare gli oggetti di configurazione del documento */
+    
+    this.conf.paginaConfig = this.dbRequest.configRaw;
+    console.log(this.conf.paginaConfig); 
+    this.conf.docStyle = this.dbRequest.configRaw;
+    console.log(this.conf.docStyle);
+   
+    this.doc.creaDoc(this.paginaConf);
+    
   }
+
 }

@@ -53,64 +53,143 @@ export interface autoTableStyle{
   providedIn: 'root'
 })
 export class ConfigDocumentoService {
-  /** Recupera i dati per la configurazione della tabella
-   *  Args: 
-   *  ???? serviranno credenziali e indirizzo per il db ????
+  /** service da usare nel component che crea il documento.
+   * Si occupa di estrapolare dalla risposta del db, i campi che servono 
+   * a definire forma e stile del documento.
+   * 
+   * Args
+   *  - pagina: contiene i parametri per inizializzare jsPDF
+   *  - stile: contiene info sullo stile tipo font, dimensione caratteri corpo e titoli
+   *  - tabella: contiene le opzioni da passare ad autoTable 
    */
 
-  constructor() {
-   }
+  constructor() {}
 
-  get docConfig(): PdfOption {
-    /**Documento -> Configurazione
-     * Genera e ritorna un oggetto con i parametri per la creazione del pdf*/
+  private pagina!: PdfOption;
+  private stile!: PdfStyle;
+  private tabella!: autoTableOption; 
   
-    const conf = {
-      orientation: 'p',
-      format: 'a4',
-      unit: 'mm'
+
+  //---------------------------pagina------------------------------------------
+  // setter
+  set paginaConfig(response: object){
+    /**parametro: oggetto di risposta del DB
+     * recupera dentro alla risposta i campi che riguardano
+     * formato pagina, orientamento e unità di misura.
+     */
+    let conf: PdfOption = {};
+
+    //controlla i campi di response
+    for(const [key, val] of Object.entries(response)){
+      console.log('chiave:', key, '\nvalore:', val);
+      //quando trova i campi utili alla config pagina
+      //li inserisce nella proprietà pagina.
+
+      // serve sapere come arrivano i campi in 'response'
     }
-    console.log('option pdf', conf);
-    return conf;
+
+    this.pagina = conf;
+
+    //#################TEST######################
+    this.pagina = {
+      orientation: 'l',
+      format: 'a3'
+    }
+    //###########################################
   }
-
-  get docStyle(): PdfStyle{
-    /**Documento -> Stile
-     * Genera e ritorna un oggetto per la definizione dello stile generale del pdf,
-     * per lo stile della tabella c'è un oggetto più specifico
+  // getter
+  get paginaConfig(): PdfOption {
+    /**Documento -> Configurazione
+     * 
     */
+    console.log('option pdf', this.pagina);
+    if(Object.keys(this.pagina).length == 0) console.warn('pagina config è vuoto')
+    return this.pagina;
+  }
+  //---------------------------stile-------------------------------------------
+  //setter
+  set docStyle(response: object){
+    /**parametro: oggetto di risposta del DB
+     * recupera dentro alla risposta i campi che riguardano
+     * formato pagina, orientamento e unità di misura.
+     */
+    let conf: PdfStyle = {};
 
-    //elaborazione response
-    const style = {
+    //controlla i campi di response
+    for(const [key, val] of Object.entries(response)){
+      console.log('chiave:', key, '\nvalore:', val);
+      //quando trova i campi utili alla config pagina
+      //li inserisce nella proprietà pagina.
+
+      // serve sapere come arrivano i campi in 'response'
+    }
+
+    this.stile = conf;
+
+    //#############TEST##########################
+    this.stile = {
       font: 'Arial', 
       titleSize: 24,
       textSize: 12
     }
-    console.log('pdf style ',style);
-    return style; 
+    //###########################################
+
   }
 
-  get tabOption(): autoTableOption {
-    /**Tabella -> Opzioni
-     * Genera e ritorna un oggetto per la definizione dello stile generale della tabella
-     * 
-    */
+  // getter
+  get docStyle(): PdfStyle{
+    /**Documento -> Stile
+     * Genera e ritorna un oggetto per la definizione dello stile generale
+     * del pdf, per lo stile della tabella c'è un oggetto più specifico*/
 
-    //elaborazione 
-    let parametriInArrivo = {
-      tema: 'grid',
-    };
-    let assigned = Object.keys(parametriInArrivo);
-    console.log('Fine elaboazione risposta: ', assigned);
-    let tableOption: autoTableOption = {
+    //elaborazione response
+
+    return this.stile; 
+  }
+
+  //--------------------------------Tabella------------------------------------
+  //setter
+  set tabOption(response: object){
+    /** parametro è la risposta del DB
+     * filtra i dati e assegna alla proprietà tabella i valori utili alla 
+     * configurazione della tabella */
+    let tab: autoTableOption = {}
+
+    
+    //controlla i campi di response
+    for(const [key, val] of Object.entries(response)){
+      console.log('chiave:', key, '\nvalore:', val);
+      //quando trova i campi utili alla config pagina
+      //li inserisce nella proprietà pagina.
+      
+      // serve sapere come arrivano i campi in 'response'
+    }
+    
+    this.tabella = tab;
+    
+    //#############TEST##########################
+    this.tabella = {
       theme: 'grid',
       headStyles: this.testStyleHead,
       alternateRowStyles: this.testStyleBody
     }
-
-    return tableOption;
+    //###########################################
+  }
+  
+  
+  // getter
+  get tabOption(): autoTableOption {
+    /**Tabella -> Opzioni
+     * ritorna un oggetto per la definizione dello stile
+     * generale della tabella
+     * Avvisa nel caso l'oggetto sia vuoto*/
+    if(Object.values(this.tabella).length == 0) console.warn('config Tabella non presente')
+    return this.tabella
   }
 
+
+
+  //#################Test########################
   private testStyleHead: autoTableStyle = {
     fillColor: 'coral',
     fontStyle: 'bold',
@@ -121,4 +200,5 @@ export class ConfigDocumentoService {
     halign: 'right',
     textColor: '#000066'
   }
+  //#############################################
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, createEnvironmentInjector } from '@angular/core';
 import { jsPDF } from 'jspdf';
 
 
@@ -13,9 +13,9 @@ type sezionePag = {
 }
 
 export interface Layout {
-  intestazione: sezionePag | sezionePag[]
-  contenuto: sezionePag | sezionePag[]
-  piePag: sezionePag | sezionePag[]
+  intestazione?: sezionePag | sezionePag[]
+  contenuto?: sezionePag | sezionePag[]
+  piePag?: sezionePag | sezionePag[]
 }
 
 @Injectable({
@@ -28,7 +28,8 @@ export class GeometriaService {
    *  - intestazinone con titolo, logo (eventualmente altro testo)
    *  - contenuto, di norma tabella
    *  - pié pagina con info, testo, num pagina
-   */
+   * 
+   * viene utilizzato da genera documento per scrivere il pdf */
   private width!: number;
   private height!: number;
   layout!: Layout;
@@ -36,14 +37,17 @@ export class GeometriaService {
   constructor(
   ) { }
 
+  //setter larghezza (richiede numero)
   set larghezza(w: number){
     this.width = w;
   }
   
+  //setter altezza (richiede numero)
   set altezza(h: number){
     this.height = h;
   }
 
+  //setter per larghezza e altezza prendendoli da jsPDF
   set dimensioniPagna(doc: jsPDF){
     /**assegna automaticamente altezza e larghezza leggendo proprietà di jsPDF
      * 
@@ -81,5 +85,37 @@ export class GeometriaService {
     tr.startX = tr.endX;
     tr.endX = this.width;
     return tr;
+  }
+
+  bollaTrasporto(doc: jsPDF): Layout{
+    /**ritorna un layout da utilizzare nel component per creare il doc*/
+    this.dimensioniPagna = doc;
+    let ddt: Layout = {
+      intestazione:{
+        logo: {
+          dimensione: [
+            this.topRight.startX, 
+            this.topRight.startY, 
+            this.larghezza/3, 
+            this.altezza/3],
+          posizione: 'dx'
+        },
+        titolo: {
+          dimensione: [
+            0, 0, this.topLeft.endX * 2, this.topLeft.endY
+          ],
+          posizione: 'cent'
+        },
+      },
+      contenuto: {
+        tabella: {
+          dimensione: [
+            0, this.topLeft.endY, this.larghezza, this.altezza/2
+          ],
+          posizione: 'cent',
+        }
+      }
+    }
+    return ddt
   }
 }

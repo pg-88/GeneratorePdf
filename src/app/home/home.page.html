@@ -41,10 +41,25 @@
   <ion-header *ngIf="!preview" style="color: tomato;">Niente da vedere</ion-header>
 
   <ion-grid *ngIf="preview">
-    <ion-row *ngFor="let i of datiGrezzi">
-      {{ i }} {{ datiGrezzi }}
+    <ion-row>
+      <ion-header>Dati documento</ion-header>
+      <ion-col *ngIf="datiTesta.titolo != null"> Titolo: {{ datiTesta.titolo }} </ion-col>
+      <ion-col > <img src="{{ datiTesta.logo }}" alt="" width="100"></ion-col>
+      <ion-col > {{ datiTesta.altro }} </ion-col>
     </ion-row>
-
+    <ion-row>
+      <ion-header>configurazione Documento</ion-header>
+      <ion-col>
+        Orientazione: 
+        {{ 
+          paginaConf.orientation == 'l' || 
+          paginaConf.orientation == 'landscape' ?
+          'orizzontale' :
+          'verticale'
+        }}
+      </ion-col>
+      <ion-col>Formato: {{ paginaConf.format }}</ion-col>
+    </ion-row>
     <ion-footer>
       <ion-title>Stile Documento</ion-title>
       <ion-item>
@@ -61,10 +76,12 @@
       </ion-select>
     </ion-item>
 
-    <ion-button (click)="generaConfig()">Salva configurazione stile</ion-button>
+    <ion-button (click)="generaDoc()">Salva configurazione stile</ion-button>
 
     </ion-footer>
   </ion-grid>
+
+  <iframe src="" frameborder="0"></iframe>
 
   
 
