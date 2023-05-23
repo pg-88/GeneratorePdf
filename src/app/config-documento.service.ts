@@ -91,10 +91,10 @@ export class ConfigDocumentoService {
     this.pagina = conf;
 
     //#################TEST######################
-    this.pagina = {
-      orientation: 'l',
-      format: 'a3'
-    }
+    // this.pagina = {
+    //   orientation: 'l',
+    //   format: 'a3'
+    // }
     //###########################################
   }
   // getter

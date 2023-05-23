@@ -118,7 +118,7 @@ export class GeometriaService {
       piePag: {
         indirizzo: {
           dimensione: [
-            0, this.height * (1 - 1/6) , this.width / 2, this.height / 6
+            0, this.height * (1 - 1/6) , this.width / 2, this.height / 7
           ]
         }
       }

@@ -38,7 +38,7 @@ export class GeneraDocumentoService {
   test(){
 
     this.disegnaRettangoli()
-    //this.doc.output('pdfobjectnewwindow', {filename: 'testing.pdf'})
+    this.doc.output('pdfobjectnewwindow', {filename: 'testing.pdf'})
   }
 
   private disegnaRettangoli(){
@@ -50,7 +50,18 @@ export class GeneraDocumentoService {
     Object.values(this.layout).forEach(section => {
       for(let field in section){
         console.log(field, section[`${field}`]?.dimensione);
-        this.doc.context2d
+        const geom = section[`${field}`]?.dimensione;
+        let c = this.doc.canvas.getContext('2d');
+        // let ctx = this.doc.context2d
+        c.strokeStyle = "#FF9430";
+        c.strokeRect(geom[0], geom[1], geom[2], geom[3]);
+        c.fillStyle = '#990000';
+        c.textAlign = 'center';
+        c.font = '14px Arial'
+        c.fillText(
+          field.toString(), 
+          (geom[0] + geom[2]/3), (geom[1] + geom[3] / 2)
+        );
       }
     });
   }
