@@ -96,8 +96,8 @@ export class GeometriaService {
           dimensione: [
             this.topRight.startX, 
             this.topRight.startY, 
-            this.larghezza/3, 
-            this.altezza/3],
+            this.width/3, 
+            this.height/3],
           posizione: 'dx'
         },
         titolo: {
@@ -110,9 +110,16 @@ export class GeometriaService {
       contenuto: {
         tabella: {
           dimensione: [
-            0, this.topLeft.endY, this.larghezza, this.altezza/2
+            0, this.topLeft.endY, this.width, this.height / 2
           ],
           posizione: 'cent',
+        }
+      },
+      piePag: {
+        indirizzo: {
+          dimensione: [
+            0, this.height * (1 - 1/6) , this.width / 2, this.height / 6
+          ]
         }
       }
     }

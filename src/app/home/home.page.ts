@@ -138,31 +138,31 @@ export class HomePage {
     this.dati.piepagina = resDati;
     this.datiPie = this.dati.piepagina;
 
-    console.log(
-      'Dati documento:',
-      this.datiTesta,
-      this.datiTab,
-      this.datiPie,
-    );
-    console.log(
-      '\nDati Configurazione: ',
-      this.paginaConf,
-      this.paginaStile,
-      this.tabellaOption
-    );
+    // console.log(
+    //   'Dati documento:',
+    //   this.datiTesta,
+    //   this.datiTab,
+    //   this.datiPie,
+    // );
+    // console.log(
+    //   '\nDati Configurazione: ',
+    //   this.paginaConf,
+    //   this.paginaStile,
+    //   this.tabellaOption
+    // );
+
     this.preview = true;
   }
 
   generaDoc(){
     /**Presi gli input dalla pagina, richiama il servizio Config
      * per generare gli oggetti di configurazione del documento */
+    let tmpl: string = this.input.tipo != '' ?
+      this.input.tipo :
+      this.dbRequest.configRaw.tipo.toLocaleLowerCase();
     
-    this.conf.paginaConfig = this.dbRequest.configRaw;
-    console.log(this.conf.paginaConfig); 
-    this.conf.docStyle = this.dbRequest.configRaw;
-    console.log(this.conf.docStyle);
-   
-    this.doc.creaDoc(this.paginaConf);
+    this.doc.creaDoc(this.paginaConf, tmpl);
+    this.doc.test()
     
   }
 
