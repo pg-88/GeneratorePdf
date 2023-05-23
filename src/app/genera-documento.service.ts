@@ -41,7 +41,16 @@ export class GeneraDocumentoService {
     this.doc.setProperties({
       title: 'test',
       subject: 'A jspdf-autotable example pdf ',
+      author: 'EmilSoftware'
   });
+
+  this.doc.viewerPreferences({
+    HideMenubar: true,
+    HideToolbar: true,
+    HideWindowUI: true,
+    CenterWindow: true,
+    FitWindow: true,
+  }, true);
 
     return this.doc.output('datauristring');
 

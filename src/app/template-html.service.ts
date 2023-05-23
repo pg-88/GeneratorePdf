@@ -6,5 +6,10 @@ import { Injectable } from '@angular/core';
 })
 export class TemplateHtmlService {
 
-  constructor() { }
+  private root: HTMLDivElement;
+  constructor() { 
+    this.root = document.createElement('div');
+  }
+
+  
 }
