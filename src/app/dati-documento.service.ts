@@ -58,6 +58,7 @@ export class DatiDocumentoService {
       logo: 'https://ih1.redbubble.net/image.424611934.8062/st,small,507x507-pad,600x600,f8f8f8.jpg',
       altro: 'documento di trasporto'
     }
+    //#####################################
   };
 
   //getter intestazione documento

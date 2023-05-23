@@ -162,7 +162,10 @@ export class HomePage {
       this.dbRequest.configRaw.tipo.toLocaleLowerCase();
     
     this.doc.creaDoc(this.paginaConf, tmpl);
-    this.doc.test()
+
+    let obj: HTMLObjectElement = document.getElementsByTagName('object')[0];
+    obj.data = this.doc.test();
+    console.log('location hash', obj)
     
   }
 
