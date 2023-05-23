@@ -37,8 +37,14 @@ export class GeneraDocumentoService {
 
   test(){
 
-    this.disegnaRettangoli()
-    this.doc.output('pdfobjectnewwindow', {filename: 'testing.pdf'})
+    this.disegnaRettangoli();
+    this.doc.setProperties({
+      title: 'test',
+      subject: 'A jspdf-autotable example pdf ',
+  });
+
+    return this.doc.output('datauristring');
+
   }
 
   private disegnaRettangoli(){
@@ -58,10 +64,13 @@ export class GeneraDocumentoService {
         c.fillStyle = '#990000';
         c.textAlign = 'center';
         c.font = '14px Arial'
-        c.fillText(
-          field.toString(), 
-          (geom[0] + geom[2]/3), (geom[1] + geom[3] / 2)
-        );
+        // c.fillText(
+        //   field.toString(), 
+        //   (geom[0] + geom[2]/3), (geom[1] + geom[3] / 2)
+        // );
+        if(field.toString() == 'tabella'){
+          
+        }
       }
     });
   }
@@ -101,8 +110,9 @@ export class GeneraDocumentoService {
 
   }
 
-  tabella() {
-
+  tabella(startY: number, dati: any) {
+    /** crea tabella con autotable e la posiziona alla ordinata startY */
+    autoTable(this.doc, dati)
   }
 
   piePagina(){
@@ -111,7 +121,7 @@ export class GeneraDocumentoService {
   }
 
   output(){
-
+    /**genera il file del documento e lo può mostrare/scaricare/salvare come blob */
   }
 
 
