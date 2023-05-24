@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { GeneraDocumentoService } from '../genera-documento.service';
-import { ChiamataDBService } from '../chiamata-db.service';
+import { ChiamataDBService, template } from '../chiamata-db.service';
 import { ConfigDocumentoService, PdfOption, PdfStyle, autoTableOption } from '../config-documento.service';
 import { DatiDocumentoService, PagDati, TabDati } from '../dati-documento.service';
 import { autoTable } from 'jspdf-autotable';
@@ -40,7 +40,8 @@ export class HomePage {
   private showPreview = false;
 
   
-  public datiPagina!: PagDati; //tetsti e immagini da inserire nella pagina
+  public datiPagina!: PagDati; //configurazione della pagina
+  public datiTesto!: PagDati;
   public datiTab!: TabDati; //dati per la creazione tabella
   
 
@@ -127,6 +128,8 @@ export class HomePage {
     let template = this.dbRequest.templateDoc;
     console.log('template arrivata alla home:', template);
 
+    this.doc.creaDoc(template);
+
     
 
     //filtro e assegno dati di config alle proprietà di questa classe
@@ -136,10 +139,10 @@ export class HomePage {
 
   }
 
-  generaDoc(){
+  generaDoc(t: template){
     /**Presi gli input dalla pagina, richiama il servizio Config
      * per generare gli oggetti di configurazione del documento */
-
+    
 
   }
 

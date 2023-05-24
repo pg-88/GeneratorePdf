@@ -139,26 +139,11 @@ const TEMPLATE_OFFERTA: template = [
 export class ChiamataDBService {
   /**Si occuperà di interfacciarsi con il DB e smistare dati agli altri services*/
   
-  //serviranno delle credenziali di accesso
-  //forse sarà meglio metterle in environments
-
   constructor() { }
 
   private template!: template;
   private recordSet!: object;
 
-  richiestaDati(nomeTemplate: string){
-    /**chiama la tabella record set recupera la query sql e la esegue
-     * per la tabella template, controlla lo status risposta e
-     * inizializza la variabile template
-     * 
-     * arg
-     *  - nomeTemplate: il nome con cui cercare il recordset */
-
-    //inserire qui chiamata a recordset
-
-  }
-  
   //prende il nome template e inizializza 
   set templateParams(params: {
     templateName: string,
@@ -169,9 +154,7 @@ export class ChiamataDBService {
     this.recordSet = this.recordSetRequest(params.templateName, params.keyName, params.keyVal);
     for(const [key, val] of Object.entries(this.recordSet)){
       if(key == 'sql') this.templateRequest(val);
-
     }
-
   }
 
   private recordSetRequest(templateName: string, keyName: string, keyValue: any){
@@ -191,7 +174,6 @@ export class ChiamataDBService {
       //console.error(Response.status)
     }
   }
-
 
   get templateDoc(){
     //controlla se lo status della risposta è corretto

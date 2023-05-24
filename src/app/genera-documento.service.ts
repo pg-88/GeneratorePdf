@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { ConfigDocumentoService } from './config-documento.service';
+import { ConfigDocumentoService, PdfOption } from './config-documento.service';
 import { DatiDocumentoService } from './dati-documento.service';
 import { GeometriaService, Layout } from './geometria.service';
+import { template } from './chiamata-db.service';
 
 
 
@@ -36,14 +37,7 @@ export class GeneraDocumentoService {
 
 
   test(){
-
-    this.disegnaRettangoli();
-    this.doc.setProperties({
-      title: 'test',
-      subject: 'A jspdf-autotable example pdf ',
-      author: 'EmilSoftware'
-  });
-
+  
   this.doc.viewerPreferences({
     HideMenubar: true,
     HideToolbar: true,
@@ -55,37 +49,22 @@ export class GeneraDocumentoService {
     return this.doc.output('datauristring');
 
   }
-
-  private disegnaRettangoli(){
-    /**Legge il layout e con i metodi contex2d di jsPDF disegna i rettangoli 
-     * nelle aree predisposte per il layout */
-
-    console.clear();
-    // console.log('come si vede il layout da disegna rettangolo: ',this.layout);
-    Object.values(this.layout).forEach(section => {
-      for(let field in section){
-        console.log(field, section[`${field}`]?.dimensione);
-        const geom = section[`${field}`]?.dimensione;
-        let c = this.doc.canvas.getContext('2d');
-        // let ctx = this.doc.context2d
-        c.strokeStyle = "#FF9430";
-        c.strokeRect(geom[0], geom[1], geom[2], geom[3]);
-        c.fillStyle = '#990000';
-        c.textAlign = 'center';
-        c.font = '14px Arial'
-        // c.fillText(
-        //   field.toString(), 
-        //   (geom[0] + geom[2]/3), (geom[1] + geom[3] / 2)
-        // );
-        if(field.toString() == 'tabella'){
-          
-        }
-      }
-    });
+  
+  parseTemplate(templateObj: template){
+    /**Legge il template e man mano che estrapola info, richiama le fz per tracciare il doc */
+    // let pagConf: PdfOption = {};
+    // templateObj.forEach(el => {
+    //   el.tipoCampo === 'pagina' ? 
+    //     pagConf = {
+    //       format: el.formato,
+    //       orientation: el.orientamento
+    //     }
+    //     console.log('creaDoc', key, val);
+    //   }
+    // });
   }
-
-
-  creaDoc(configDoc: any, template: string) {
+  
+  creaDoc(templateObj: template) {
     /** inizializza l'oggetto jsPDF che poi viene usato da tutti i metodi
      * 
      * args
@@ -96,19 +75,22 @@ export class GeneraDocumentoService {
      *    generare, viene usata per istanziare un oggetto di Geomertia
      *    che definisce le aree del foglio da popolare. */
     
-    this.doc = new jsPDF(configDoc);
-    let geom = new GeometriaService();
-    // this.geom.dimensioniPagna = this.doc;
-    switch (template){
-      case 'ddt':
-        this.layout = geom.bollaTrasporto(this.doc);
-        break;
-      default:
-        console.log('default')
-        break;
-    }
-  }
+    this.doc = new jsPDF();
+    this.doc.setProperties({
+      title: 'test',
+      subject: 'A jspdf-autotable example pdf ',
+      author: 'EmilSoftware'
+    });
+    
 
+    
+  }
+  
+  private disegnaRettangoli(){
+    /**Legge il layout e con i metodi contex2d di jsPDF disegna i rettangoli 
+     * nelle aree predisposte per il layout */
+  }
+  
   titolo(){
     /**Aggiunge il titolo alla pagina */
 
