@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { jsPDF } from 'jspdf';
+import { jsPDF, jsPDFOptions } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ConfigDocumentoService, PdfOption } from './config-documento.service';
 import { DatiDocumentoService } from './dati-documento.service';
 import { GeometriaService, Layout } from './geometria.service';
-import { template } from './chiamata-db.service';
+import { elemento, template, campo } from './chiamata-db.service';
 
 
 
@@ -31,40 +31,62 @@ export class GeneraDocumentoService {
 
   //oggetto jsPDF 
   private doc!: jsPDF;
-  //oggetto geometria
-  //private geom!: GeometriaService;//serve o mi basta un oggetto layout??
-  private layout!: Layout;
+  private layout!: template;
 
+  private canvasElement: elemento[] = []; 
+  //estrapolo prima i canvas per tracciarli per primi e non coprire altro (comprese immagini)
 
-  test(){
+  private responseElement: elemento[] = [];
+  //elementi che arrivano da una chiamata al recordset e hanno la proprietà response
+
+  private fixElement: elemento[] = [];
+  //elementi costanti in template che hanno la proprietà FIXEDVALUE
+
+  private config: elemento[] = [];
+  //elementi in template per inizializzare la pagina
   
+  test(){
   this.doc.viewerPreferences({
     HideMenubar: true,
     HideToolbar: true,
     HideWindowUI: true,
     CenterWindow: true,
     FitWindow: true,
-  }, true);
+  }, false);
 
     return this.doc.output('datauristring');
 
   }
-  
-  parseTemplate(templateObj: template){
-    /**Legge il template e man mano che estrapola info, richiama le fz per tracciare il doc */
-    // let pagConf: PdfOption = {};
-    // templateObj.forEach(el => {
-    //   el.tipoCampo === 'pagina' ? 
-    //     pagConf = {
-    //       format: el.formato,
-    //       orientation: el.orientamento
-    //     }
-    //     console.log('creaDoc', key, val);
-    //   }
-    // });
+
+  set layoutDoc(template: template){
+    this.layout = template;
+    this.parseTemplate();
   }
   
-  creaDoc(templateObj: template) {
+  parseTemplate(){
+    /**Legge il template e man mano che estrapola info, richiama le fz per tracciare il doc */
+    let elemArr = this.layout;
+    elemArr?.forEach(el => {
+      let campo = el.FIELDTYPE
+    if(
+      campo == 'CANVAS_BOX' ||
+      campo ==  'CANVAS_LINE' ||
+      campo == 'LOGO'){
+        console.log(el)  
+        this.canvasElement.push(el)
+      }
+      else if(
+        campo == 'PAGE_FORMAT' || 
+        campo == 'PAGE_ORIENTATION'
+        ) {
+          this.config.push(el);
+        }
+      });
+    this.creaDoc()
+  }
+
+  
+  creaDoc() {
     /** inizializza l'oggetto jsPDF che poi viene usato da tutti i metodi
      * 
      * args
@@ -74,40 +96,53 @@ export class GeneraDocumentoService {
      *  - template: stringa che identifica il tipo di documento da 
      *    generare, viene usata per istanziare un oggetto di Geomertia
      *    che definisce le aree del foglio da popolare. */
-    
-    this.doc = new jsPDF();
+    console.clear()
+    let pdfConf: jsPDFOptions = {};
+
+    this.config.forEach(el =>{
+      if(el.FIELDTYPE == 'PAGE_FORMAT') {
+        console.log('formato: ', el); 
+        pdfConf.format = el.FIXVALUE
+      } else if (el.FIELDTYPE == 'PAGE_ORIENTATION') {
+        let val = el.FIXVALUE?.toLowerCase()
+        console.log('val',val);
+        pdfConf.orientation = val == 'p' ? 'p' : val == 'l' ? 'l' : 'p'; //se input non accettato prende portrait
+      }
+    })
+
+    console.log('inizializzazione doc con configurazione di pag:', pdfConf);
+  
+    this.doc = new jsPDF(pdfConf);
     this.doc.setProperties({
       title: 'test',
       subject: 'A jspdf-autotable example pdf ',
       author: 'EmilSoftware'
     });
-    
+    console.log('altezza: ', this.doc.internal.pageSize.height, 'larghezza: ', this.doc.internal.pageSize.width);
 
-    
+    this.disegnaCanvas();
+    this.testiFissi(); 
+    this.tabella();
   }
   
-  private disegnaRettangoli(){
+  private disegnaCanvas(){
     /**Legge il layout e con i metodi contex2d di jsPDF disegna i rettangoli 
      * nelle aree predisposte per il layout */
   }
   
-  titolo(){
-    /**Aggiunge il titolo alla pagina */
-
-
+  private testiFissi(){
+    /**Aggiunge campi testuali alla pagina */
+    let elementiTxt = this.fixElement
+    console.log(elementiTxt);
   }
 
-  logo(){
-
+  private testiRecordSet(){
+    /**aggiunge i campi arrivati dal recordset */
+  
   }
 
-  tabella(startY: number, dati: any) {
+  private tabella() {
     /** crea tabella con autotable e la posiziona alla ordinata startY */
-    autoTable(this.doc, dati)
-  }
-
-  piePagina(){
-
 
   }
 

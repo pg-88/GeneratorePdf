@@ -126,17 +126,7 @@ export class HomePage {
     }
 
     let template = this.dbRequest.templateDoc;
-    console.log('template arrivata alla home:', template);
-
-    this.doc.creaDoc(template);
-
-    
-
-    //filtro e assegno dati di config alle proprietà di questa classe
-
-        
-    //filtro e assegno dati del contenuto doc alle proprietà di questa classe
-
+    this.doc.layoutDoc = this.dbRequest.templateDoc;
   }
 
   generaDoc(t: template){
