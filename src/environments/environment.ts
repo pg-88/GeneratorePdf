@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseUrl: ''
+  baseUrl: 'https://93.42.188.163/esgestx/api',
 };
 
 /*

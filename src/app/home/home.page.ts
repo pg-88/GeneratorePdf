@@ -6,6 +6,7 @@ import { DatiDocumentoService, PagDati, TabDati } from '../dati-documento.servic
 import { autoTable } from 'jspdf-autotable';
 
 
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -54,10 +55,17 @@ export class HomePage {
 
   constructor(
     private doc: GeneraDocumentoService,
-    private conf: ConfigDocumentoService,
-    private dati: DatiDocumentoService,
+    //private conf: ConfigDocumentoService,
+    // private dati: DatiDocumentoService,
     private dbRequest: ChiamataDBService,
   ) {}
+
+
+  ngOnInit(){
+    
+    this.recuperaVisualizza()
+  }
+
 //############################input frontend###################################
   // //input nome setter
   // set nome(n:string){
@@ -114,6 +122,7 @@ export class HomePage {
   // }
 //############################fine input frontend##############################
 
+
   recuperaVisualizza(){
     /**Lancia la chiamata al DB, quindi smista la risposta tra i vari servizi
      * per inizializzare le proprietà */
@@ -127,6 +136,11 @@ export class HomePage {
 
     let template = this.dbRequest.templateDoc;
     this.doc.layoutDoc = this.dbRequest.templateDoc;
+
+    let htmlObj: HTMLObjectElement = document.getElementsByTagName('object')[0]; 
+    
+    // htmlObj.data = this.doc.output()!
+    htmlObj.data = this.doc.test()
   }
 
   generaDoc(t: template){

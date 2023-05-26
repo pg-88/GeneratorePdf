@@ -223,12 +223,11 @@ export class ChiamataDBService {
       }
     });
 
-    chiamata.subscribe(
-      (data) => {
-      this.template = data;
-      //console.log('dati in arrivo: ', data);
-    }
-    );
+    // chiamata.subscribe(
+    //   (data) => {
+    //   this.template = data;
+    //   //console.log('dati in arrivo: ', data);
+    // });
   
     this.template = TEMPLATE_PREVENTIVO_TEST;
   }

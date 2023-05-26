@@ -46,21 +46,103 @@ export class GeneraDocumentoService {
   //elementi in template per inizializzare la pagina
   
   test(){
-  this.doc.viewerPreferences({
-    HideMenubar: true,
-    HideToolbar: true,
-    HideWindowUI: true,
-    CenterWindow: true,
-    FitWindow: true,
-  }, false);
+    this.doc.setFontSize(6);
 
+    // console.log(this.doc.internal.scaleFactor);
+    //  let c_xy = [
+    //   this.doc.internal.pageSize.width/2, 
+    //   10, 
+    // ];
+    // this.mira = c_xy;
+
+    // this.doc.text(str, c_xy[0], c_xy[1], 
+    // {
+    //   align: 'center'
+    // });
+
+    // c_xy = [c_xy[0], c_xy[1]+10]
+    // this.mira = [c_xy[0], c_xy[1]];
+
+    // this.doc.text('allineamento sinistra', c_xy[0], c_xy[1], 
+    // {
+    //   align: 'left'
+    // });
+
+    // c_xy = [c_xy[0], c_xy[1]+10]
+    // this.mira = [c_xy[0], c_xy[1]];
+
+    // this.doc.text('allineamento destra', c_xy[0], c_xy[1], 
+    // {
+    //   align: 'right'
+    // });
+
+    // c_xy = [c_xy[0], c_xy[1]+10]
+    // this.mira = [c_xy[0], c_xy[1]];
+
+    // this.doc.text('allineamento giustificato', c_xy[0], c_xy[1], 
+    // {
+    //   align: 'justify'
+    // });
+///2.1166666666666663
+    this.doc.setFont('times')
+    console.log(this.doc.getFontList());
+
+    //bozza che diventerà una classe
+    let margin = 8;
+    let yFreeSpace = this.doc.internal.pageSize.height - margin;
+
+    for(let i = 0; i < this.doc.internal.pageSize.height; i += 2){
+      this.doc.setCreationDate(new Date());
+      let altezzaRiga = this.doc.getTextDimensions(`Riga numero: ${i+1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`).h;
+      this.doc.text(`Riga numero: ${i+1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`, 0, i, {
+        baseline: 'top'
+      });
+      console.log(this.doc.getTextDimensions(`Riga numero: ${i+1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`).h)
+    }
+
+    let riga = 0;
+    while(yFreeSpace > 8){
+      let textH = this.doc.getTextDimensions(`Riga numero: ${1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`).h
+      const y = this.doc.internal.pageSize.height - yFreeSpace - textH;
+      this.doc.text(`Riga numero: ${riga+1}`, margin, y);
+      yFreeSpace -= textH;
+      riga++;
+      this.doc.setFontSize(this.doc.getFontSize()+1);
+    }
+    
     return this.doc.output('datauristring');
-
   }
 
   set layoutDoc(template: template){
     this.layout = template;
     this.parseTemplate();
+  }
+
+  set mira(coord: number[]){
+    if(coord.length != 2){
+      console.error('INPUT NON CONGRUENTE servono 2 numeri per un punto nel piano.');
+    } else {
+      const [x, y] = coord;
+      this.doc.setDrawColor(100, 0, 0);
+      this.doc.line(x, y+4, x, y-4);
+      this.doc.line(x-4, y, x+4, y);
+      this.doc.circle(x, y, 2);
+      this.doc.setDrawColor(100);
+    }
+  }
+  set miraLabel(coord: number[]){
+    if(coord.length != 2){
+      console.error('INPUT NON CONGRUENTE servono 2 numeri per un punto nel piano.');
+    } else {
+      const [x, y] = coord;
+      this.doc.setDrawColor(100, 0, 0);
+      this.doc.line(x, y+4, x, y-4);
+      this.doc.line(x-4, y, x+4, y);
+      this.doc.circle(x, y, 2);
+      this.doc.setTextColor(100,0,3);
+      this.doc.setFontSize(9);
+      this.doc.text(`x:${x.toFixed(2)}; y:${y.toFixed(2)}`,x+3,y+1);
+    }
   }
   
   parseTemplate(){
@@ -72,8 +154,7 @@ export class GeneraDocumentoService {
       campo == 'CANVAS_BOX' ||
       campo ==  'CANVAS_LINE' ||
       campo == 'LOGO'){
-        console.log(el)  
-        this.canvasElement.push(el)
+        this.canvasElement.push(el);
       }
       else if(
         campo == 'PAGE_FORMAT' || 
@@ -82,7 +163,7 @@ export class GeneraDocumentoService {
           this.config.push(el);
         }
       });
-    this.creaDoc()
+    this.creaDoc();
   }
 
   
@@ -96,21 +177,21 @@ export class GeneraDocumentoService {
      *  - template: stringa che identifica il tipo di documento da 
      *    generare, viene usata per istanziare un oggetto di Geomertia
      *    che definisce le aree del foglio da popolare. */
-    console.clear()
+
     let pdfConf: jsPDFOptions = {};
 
     this.config.forEach(el =>{
       if(el.FIELDTYPE == 'PAGE_FORMAT') {
-        console.log('formato: ', el); 
+        //console.log('formato: ', el); 
         pdfConf.format = el.FIXVALUE
       } else if (el.FIELDTYPE == 'PAGE_ORIENTATION') {
         let val = el.FIXVALUE?.toLowerCase()
-        console.log('val',val);
+        //console.log('val',val);
         pdfConf.orientation = val == 'p' ? 'p' : val == 'l' ? 'l' : 'p'; //se input non accettato prende portrait
       }
     })
 
-    console.log('inizializzazione doc con configurazione di pag:', pdfConf);
+    //console.log('inizializzazione doc con configurazione di pag:', pdfConf);
   
     this.doc = new jsPDF(pdfConf);
     this.doc.setProperties({
@@ -118,7 +199,7 @@ export class GeneraDocumentoService {
       subject: 'A jspdf-autotable example pdf ',
       author: 'EmilSoftware'
     });
-    console.log('altezza: ', this.doc.internal.pageSize.height, 'larghezza: ', this.doc.internal.pageSize.width);
+    //console.log('altezza: ', this.doc.internal.pageSize.height, 'larghezza: ', this.doc.internal.pageSize.width);
 
     this.disegnaCanvas();
     this.testiFissi(); 
@@ -128,6 +209,19 @@ export class GeneraDocumentoService {
   private disegnaCanvas(){
     /**Legge il layout e con i metodi contex2d di jsPDF disegna i rettangoli 
      * nelle aree predisposte per il layout */
+    let ctx = this.doc.canvas.getContext('2d');
+    this.canvasElement.forEach(el => {
+      el.FIELDTYPE == 'CANVAS_LINE' ??
+        this.doc.line(el.POSX!, el.POSY!, el.POSX!, (el.POSY! + el.WIDTH!), 'F');
+
+      el.FIELDTYPE == 'CANVAS_BOX' ?? 
+        this.doc.rect(el.POSX!, el.POSY!, el.POSX! + el.HEIGHT!, el.POSY! + el.WIDTH!);
+
+      el.FIELDTYPE == 'LOGO' ?? 
+        this.doc.addImage(`src/assets/icon/${el.FIXVALUE!}`, el.FIXVALUE!.split('.')[1], el.POSX!, el.POSY!, el.WIDTH!, el.HEIGHT!)
+    });
+
+
   }
   
   private testiFissi(){
@@ -146,8 +240,12 @@ export class GeneraDocumentoService {
 
   }
 
-  output(){
+  output(fileName?: string){
     /**genera il file del documento e lo può mostrare/scaricare/salvare come blob */
+    let pdfUri = this.doc.output('datauristring');
+    fileName != '' ?? this.doc.save(fileName);
+
+    return pdfUri;
   }
 
 
