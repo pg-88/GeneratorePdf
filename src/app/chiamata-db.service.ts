@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { GeometriaService, Layout } from './geometria.service';
 import { DatiDocumentoService, PagDati } from './dati-documento.service';
 import { ConfigDocumentoService } from './config-documento.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';

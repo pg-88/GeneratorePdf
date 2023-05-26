@@ -38,32 +38,19 @@ export class HomePage {
       tema:'',
     },
   }
-  private showPreview = false;
 
+  private response!: any;
   
-  public datiPagina!: PagDati; //configurazione della pagina
-  public datiTesto!: PagDati;
-  public datiTab!: TabDati; //dati per la creazione tabella
-  
-
-  public paginaConf!: PdfOption; //configurazione pagina estrapolata dai dati
-  public paginaStile!: PdfStyle; //configurazioni stile estrapolata dai dati
-  public tabellaOption!: autoTableOption; //opzioni per la creazione della tabella
-
-
-
-
   constructor(
     private doc: GeneraDocumentoService,
-    //private conf: ConfigDocumentoService,
-    // private dati: DatiDocumentoService,
+    private dati: DatiDocumentoService,
     private dbRequest: ChiamataDBService,
   ) {}
 
 
   ngOnInit(){
-    
-    this.recuperaVisualizza()
+
+  //   this.recuperaVisualizza()
   }
 
 //############################input frontend###################################
@@ -121,33 +108,5 @@ export class HomePage {
   //   return this.showPreview;
   // }
 //############################fine input frontend##############################
-
-
-  recuperaVisualizza(){
-    /**Lancia la chiamata al DB, quindi smista la risposta tra i vari servizi
-     * per inizializzare le proprietà */
-    //chiamata DB: 
-    //passo nome, nome della chiave e valore
-    this.dbRequest.templateParams = {
-      templateName: 'Offerta',
-      keyName: 'numPre',
-      keyVal: 103
-    }
-
-    let template = this.dbRequest.templateDoc;
-    this.doc.layoutDoc = this.dbRequest.templateDoc;
-
-    let htmlObj: HTMLObjectElement = document.getElementsByTagName('object')[0]; 
-    
-    // htmlObj.data = this.doc.output()!
-    htmlObj.data = this.doc.test()
-  }
-
-  generaDoc(t: template){
-    /**Presi gli input dalla pagina, richiama il servizio Config
-     * per generare gli oggetti di configurazione del documento */
-    
-
-  }
 
 }

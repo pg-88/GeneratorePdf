@@ -3,7 +3,6 @@ import { jsPDF, jsPDFOptions } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ConfigDocumentoService, PdfOption } from './config-documento.service';
 import { DatiDocumentoService } from './dati-documento.service';
-import { GeometriaService, Layout } from './geometria.service';
 import { elemento, template, campo } from './chiamata-db.service';
 
 
@@ -46,8 +45,6 @@ export class GeneraDocumentoService {
   //elementi in template per inizializzare la pagina
   
   test(){
-    this.doc.setFontSize(6);
-
     // console.log(this.doc.internal.scaleFactor);
     //  let c_xy = [
     //   this.doc.internal.pageSize.width/2, 
@@ -83,34 +80,34 @@ export class GeneraDocumentoService {
     // {
     //   align: 'justify'
     // });
-///2.1166666666666663
-    this.doc.setFont('times')
-    console.log(this.doc.getFontList());
 
-    //bozza che diventerà una classe
-    let margin = 8;
-    let yFreeSpace = this.doc.internal.pageSize.height - margin;
+    // this.doc.setFont('times')
+    // console.log(this.doc.getFontList());
 
-    for(let i = 0; i < this.doc.internal.pageSize.height; i += 2){
-      this.doc.setCreationDate(new Date());
-      let altezzaRiga = this.doc.getTextDimensions(`Riga numero: ${i+1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`).h;
-      this.doc.text(`Riga numero: ${i+1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`, 0, i, {
-        baseline: 'top'
-      });
-      console.log(this.doc.getTextDimensions(`Riga numero: ${i+1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`).h)
-    }
+    // //bozza che diventerà una classe
+    // let margin = 8;
+    // let yFreeSpace = this.doc.internal.pageSize.height - margin;
 
-    let riga = 0;
-    while(yFreeSpace > 8){
-      let textH = this.doc.getTextDimensions(`Riga numero: ${1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`).h
-      const y = this.doc.internal.pageSize.height - yFreeSpace - textH;
-      this.doc.text(`Riga numero: ${riga+1}`, margin, y);
-      yFreeSpace -= textH;
-      riga++;
-      this.doc.setFontSize(this.doc.getFontSize()+1);
-    }
-    
-    return this.doc.output('datauristring');
+    // for(let i = 0; i < this.doc.internal.pageSize.height; i += 2){
+    //   this.doc.setCreationDate(new Date());
+    //   let altezzaRiga = this.doc.getTextDimensions(`Riga numero: ${i+1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`).h;
+    //   this.doc.text(`Riga numero: ${i+1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`, 0, i, {
+    //     baseline: 'top'
+    //   });
+    //   console.log(this.doc.getTextDimensions(`Riga numero: ${i+1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`).h)
+    // }
+
+    // let riga = 0;
+    // while(yFreeSpace > 8){
+    //   let textH = this.doc.getTextDimensions(`Riga numero: ${1};tipo font ${this.doc.getFont().fontName}; ${this.doc.getFontSize()}`).h
+    //   const y = this.doc.internal.pageSize.height - yFreeSpace - textH;
+    //   this.doc.text(`Riga numero: ${riga+1}`, margin, y);
+    //   yFreeSpace -= textH;
+    //   riga++;
+    //   this.doc.setFontSize(this.doc.getFontSize()+1);
+    // }
+
+    // return this.doc.output('datauristring');
   }
 
   set layoutDoc(template: template){
@@ -178,68 +175,28 @@ export class GeneraDocumentoService {
      *    generare, viene usata per istanziare un oggetto di Geomertia
      *    che definisce le aree del foglio da popolare. */
 
+
+
+    //genera l'oggetto geometria che predispone l'architettura della pagina
     let pdfConf: jsPDFOptions = {};
 
     this.config.forEach(el =>{
       if(el.FIELDTYPE == 'PAGE_FORMAT') {
-        //console.log('formato: ', el); 
         pdfConf.format = el.FIXVALUE
       } else if (el.FIELDTYPE == 'PAGE_ORIENTATION') {
         let val = el.FIXVALUE?.toLowerCase()
-        //console.log('val',val);
         pdfConf.orientation = val == 'p' ? 'p' : val == 'l' ? 'l' : 'p'; //se input non accettato prende portrait
       }
-    })
-
-    //console.log('inizializzazione doc con configurazione di pag:', pdfConf);
+    });
   
     this.doc = new jsPDF(pdfConf);
     this.doc.setProperties({
-      title: 'test',
-      subject: 'A jspdf-autotable example pdf ',
-      author: 'EmilSoftware'
+      title: `${this.layout![0].TEMPLATENAME}`,
+      subject: 'Documento Generato Automaticamente dal servizio web',
+      author: 'EmilSoftware',
     });
-    //console.log('altezza: ', this.doc.internal.pageSize.height, 'larghezza: ', this.doc.internal.pageSize.width);
-
-    this.disegnaCanvas();
-    this.testiFissi(); 
-    this.tabella();
   }
   
-  private disegnaCanvas(){
-    /**Legge il layout e con i metodi contex2d di jsPDF disegna i rettangoli 
-     * nelle aree predisposte per il layout */
-    let ctx = this.doc.canvas.getContext('2d');
-    this.canvasElement.forEach(el => {
-      el.FIELDTYPE == 'CANVAS_LINE' ??
-        this.doc.line(el.POSX!, el.POSY!, el.POSX!, (el.POSY! + el.WIDTH!), 'F');
-
-      el.FIELDTYPE == 'CANVAS_BOX' ?? 
-        this.doc.rect(el.POSX!, el.POSY!, el.POSX! + el.HEIGHT!, el.POSY! + el.WIDTH!);
-
-      el.FIELDTYPE == 'LOGO' ?? 
-        this.doc.addImage(`src/assets/icon/${el.FIXVALUE!}`, el.FIXVALUE!.split('.')[1], el.POSX!, el.POSY!, el.WIDTH!, el.HEIGHT!)
-    });
-
-
-  }
-  
-  private testiFissi(){
-    /**Aggiunge campi testuali alla pagina */
-    let elementiTxt = this.fixElement
-    console.log(elementiTxt);
-  }
-
-  private testiRecordSet(){
-    /**aggiunge i campi arrivati dal recordset */
-  
-  }
-
-  private tabella() {
-    /** crea tabella con autotable e la posiziona alla ordinata startY */
-
-  }
-
   output(fileName?: string){
     /**genera il file del documento e lo può mostrare/scaricare/salvare come blob */
     let pdfUri = this.doc.output('datauristring');
