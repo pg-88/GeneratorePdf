@@ -1,7 +1,72 @@
 import { Injectable } from '@angular/core';
 import { GeometriaService, Layout } from './geometria.service';
-import { DatiDocumentoService, PagDati } from './dati-documento.service';
+import { DatiDocumentoService } from './dati-documento.service';
 import { ConfigDocumentoService } from './config-documento.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment_dev';
+import { AuxiliaryService } from './auxiliary.service';
+
+
+export type campo = 
+  | 'CANVAS_BOX' //canvas
+  | 'CANVAS_LINE' //canvas
+  | 'LOGO' //canvas
+  | 'COLUMN' //grid
+  | 'COLUMNTITLE'//grid
+  | 'GRID' //grid
+  | 'FIELD' //record
+  | 'FIELD_SUBTOT' //record
+  | 'FIELD_SUM' // record
+  | 'LABEL' //text
+  | 'PAGE_FORMAT' 
+  | 'PAGE_ORIENTATION'
+  | 'PAGNUM'//text
+  | 'SUM' //num
+  ;
+
+  export type repeatOpt = 'A' | 'F' | 'L';
+
+  export interface elemento {
+    ID: number;
+    TEMPLATENAME: string;
+    FIELDDESCR: string;
+    FIELDTYPE: campo;
+    FIELDORDER: number,
+    GROUPBOX?: string,
+    GROUPRIF?: string,
+    POSX?: number;
+    POSY?: number;
+    WIDTH?: number;
+    HEIGHT?: number;
+    FIXVALUE?: string;
+    GRIDNAME?: string;
+    GRIDORDER?: number;
+    FONTNAME?: string;
+    FONTSIZE?: number;
+    FONTSTYLE?: string;
+    FONTCOLOR?: string;
+    FONTALIGN?: string;
+    BACKCOLOR?: string;
+    BORDER?: string;
+    BORDERCOLOR?: string;
+    RECORDSETNAME?: string;
+    FIELDNAME?: string;
+    FIELDSTYLE?: string;
+    REPEAT?: repeatOpt;
+    COND_FIELD?: string,
+    COND_VALUE?: string
+  };
+
+  export interface recordSet {
+    nomeTemplate: string;
+    nomeRecordSet: string;
+    sql: string;
+    keyName: any;
+    keyValue: any;
+  };
+  
+  export type template = elemento[];
+
 
 @Injectable({
   providedIn: 'root'
@@ -9,69 +74,51 @@ import { ConfigDocumentoService } from './config-documento.service';
 
 export class ChiamataDBService {
   /**Si occuperà di interfacciarsi con il DB e smistare dati agli altri services*/
+
+  private response!: any;
+
+  constructor(
+    private http: HttpClient,
+    private aux: AuxiliaryService,
+  ) { }
   
-  //serviranno delle credenziali di accesso
-  //forse sarà meglio metterle in environments
-
-  constructor() { }
-
-
-  private risposta!: object;
-
-  richiestaDati(nome: string, info?: object){
-    //chiamata al DB la risposta viene mandata alla proprietà risposta
-    //console.log(`Parte chiamata al server con parametri: ${nome} e ${Object.entries(info ?? {})}`)
-    const r = {status: 'ok'}//status: 'ok' per simulare risposta avvenuta correttamente
-    r.status == 'ok' ? this.risposta = r : this.risposta = {Errore: 'errore tipo..'}    
-  }
-
-  get datiRaw(){
-    //elabora la risposta e restituisce dati per il doc
-    let elaboratedResponse: object = {}
-    if(this.risposta.hasOwnProperty('Errore')){
-      console.error('Qualcosa è andato storto!');
-    }else {
-      elaboratedResponse = {
-        cliente: {
-          id: 0,
-          nome: "Pippo", 
-          pIva: 39898559054,
-          logo: 'https://ih1.redbubble.net/image.424611934.8062/st,small,507x507-pad,600x600,f8f8f8.jpg'
+  recuperaDati(p: {
+    templateName: string,
+    keyName: string,
+    keyVal: string}) {
+      /**chiamata al db coi parametri:
+       *  nome template, nome chiave e valore chiave
+       *  ritorna un'array di oggetti risposta*/
+      let request = this.http.get(`${environment.baseUrl}/stampe`,
+      {
+        headers:
+        {
+          TEMPLATENAME: p.templateName,
+          KEYNAME: p.keyName,
+          KEYVAL: p.keyVal
+        }
+      });
+          
+      request.subscribe({
+        next: data => {
+          console.log(data);
+          this.response = data;
         },
-        voci: [
-          {
-            prodotto: "wd40",
-            quantita: 300,
-            importo: 600
-          },
-          {
-            prodotto: "parrucche",
-            quantita: 6,
-            importo: 80
-          },
-        ]
-      };
+        error: e => {
+          console.warn("non arriva risposta");
+          this.assignFakeResponse();
+        }
+      })
+      
     }
-    return elaboratedResponse;
-  };
-
-  get configRaw(){
-    //elabora la risposta e restituisce le configurazioni documento
-    //prima scrematura dei dati, poi c'è config documento che 
-    //si occupa di rendere totalmente digeribili i dati a genera documento
-
-    const response = {
-      tipo: 'DDT',
-      data: '13/06/2022',
-      font: 'arial',
-      fontSize: 14,
-      titleSize: 24,
-      stileTabella: 'striped',
-      headerColor: 'lightgreen',
-    };
-
-    return response;
-  };
 
 
-}
+    assignFakeResponse(){
+      console.log('qui si assegna la risposta generata artificialmente');
+      this.response = this.aux.fakeResponse;
+    }
+
+    get responseData(){
+      return this.response;
+    } 
+  }

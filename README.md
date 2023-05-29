@@ -23,3 +23,4 @@ L'idea di fondo è quella di far confluire tutti i servizi e i dati nel componen
 ## [Genera Doc Service](./src/app/genera-documento.service.ts)
 
 ## [Geometria Servce](./src/app/geometria.service.ts)
+

@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { GeneraDocumentoService } from '../genera-documento.service';
-import { ChiamataDBService } from '../chiamata-db.service';
-import { ConfigDocumentoService, PdfOption, PdfStyle, autoTableOption } from '../config-documento.service';
-import { DatiDocumentoService, PagDati, TabDati } from '../dati-documento.service';
+import { ChiamataDBService, template } from '../chiamata-db.service';
+import { ConfigDocumentoService, PdfOption, autoTableOption } from '../config-documento.service';
+import { DatiDocumentoService } from '../dati-documento.service';
+import { jsPDF } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
+import { AuxiliaryService } from '../auxiliary.service';
 
 
 @Component({
@@ -30,13 +32,14 @@ export class HomePage {
    *    template per la preview
    */
 
-  public datiTesta!: PagDati; //dati filtrati per l'intestazione del documento
-  public datiTab!: TabDati; //dati filtrati per il corpo del documento (tabella)
-  public datiPie!: PagDati; //dati filtrati per il piede del documento
+  private modello!: template;
+  private recordset!: any;
 
-  public paginaConf!: PdfOption; //configurazione pagina estrapolata dai dati
-  public paginaStile!: PdfStyle; //configurazioni stile estrapolata dai dati
-  public tabellaOption!: autoTableOption; //opzioni per la creazione della tabella
+
+  private listaElementi!: any;
+  private listaOggetti!: any;
+
+  private documento!: jsPDF;
 
 
 
@@ -46,20 +49,35 @@ export class HomePage {
     private conf: ConfigDocumentoService,
     private dati: DatiDocumentoService,
     private dbRequest: ChiamataDBService,
+    private aux: AuxiliaryService
   ) {}
 
+  set templateFromDb(params: {
+    templateName: string,
+    keyName: string,
+    keyVal: any
+  }){
+    /**recupera i dati e li assegna a template */
+    let m: any;
 
+    this.dbRequest.recuperaDati(params);
+    
+    console.log('Template in home.page.ts', this.dbRequest.responseData);
+  }
+
+
+
+  testRequestTemplate(){
+    this.templateFromDb = {
+      templateName: 'PREVENTIVI1',
+      keyName: 'NUMPRE',
+      keyVal: 103
+    }
+  }
 
   generaDoc(){
     /**Presi gli input dalla pagina, richiama il servizio Config
      * per generare gli oggetti di configurazione del documento */
-    let tmpl: string = this.dbRequest.configRaw.tipo.toLocaleLowerCase();
-    
-    this.doc.creaDoc(this.paginaConf, tmpl);
-
-    let obj: HTMLObjectElement = document.getElementsByTagName('object')[0];
-    obj.data = this.doc.test();
-    console.log('location hash', obj)
   }
 
 }

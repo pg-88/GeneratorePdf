@@ -2,6 +2,7 @@ import { Injectable, createEnvironmentInjector } from '@angular/core';
 import { jsPDF } from 'jspdf';
 
 
+export type coord = [number, number]; 
 type rect = [ x:number, y:number, width:number, height:number];
 type pos = 'sx' | 'cent' | 'dx';
 
