@@ -4,6 +4,7 @@ import { DatiDocumentoService } from './dati-documento.service';
 import { ConfigDocumentoService } from './config-documento.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment_dev';
+import { error } from 'console';
 // import { AuxiliaryService } from './auxiliary.service';
 
 
@@ -101,28 +102,23 @@ export class ChiamataDBService {
     return this.docTemplate;
   }
 
-  recuperaDati(p: string){
+  recuperaDati(p: string): Promise<template>{
       /**chiamata al db coi parametri:
        *  nome template, nome chiave e valore chiave
        *  ritorna un'array di oggetti risposta*/
       return new Promise(resolve => {
-        
-      }, 
-      reject)
-      let request = this.http.post(`${environment.baseUrl}/stampe/getlayout`,
-      {
-        templateName: p
-      });
-         
-      request.subscribe({
-        next: (data: any)=> {
-          // console.log('MY SUBSCRIPTION',data.Result);
-          this.docTemplate = data.Result;
-        },
-        error: e => {
-          console.warn("non arriva risposta");
-        }
+        let url = `${environment.baseUrl}/stampe/getlayout`;
+        let header = {
+          "templateName": "PREVENTIVI1",
+        };
+
+        let request = this.http.post(url, header, {observe: 'response'}).
+        subscribe({
+          next: (data => {
+            console.log(data)
+          }),
+          error: (err => console.warn(err))
+        });
       });
     }
-
   }
