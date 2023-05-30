@@ -3,7 +3,7 @@ import { template } from './chiamata-db.service';
 import { map } from 'rxjs';
 
 //stringa esportata con export script su file
-var sqlString = `2, 'PREVENTIVI1', 'orientamento', 'PAGE_ORIENTATION', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'P', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'A', NULL, NULL);
+var sqlString = `2, PREVENTIVI1, orientamento, PAGE_ORIENTATION, NULL, NULL, NULL, NULL, NULL, NULL, NULL, P, NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, A, NULL, NULL);
 1, 'PREVENTIVI1', 'pagina', 'PAGE_FORMAT', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'A4', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'A', NULL, NULL);
 16, 'PREVENTIVI1', 'tabella', 'GRID', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 3, 'PREVENTIVI1', 'logo azienda', 'LOGO', 1, 'LOGO', NULL, 10, 10, 70, 15, 'logo.jpg', NULL, NULL, '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -42,14 +42,27 @@ export class AuxiliaryService {
     let righeArr = sqlString.split('\n');
     let valArr: string[][] = [];
     for(let i = 0; i< righeArr.length; i++){
-      valArr.push((righeArr[i].split(',')));
+      let r: string[] = [];
+      righeArr[i].split(',').forEach(s => {
+        s = s.replace('NULL);', '');
+        s = s.replace('NULL', '')
+        s = s.trim();
+        r.push(s);
+      });
+      valArr.push(r);
     }
     let c = chiavi.split(',');
+    let keyArr = [];
+    
+    for(let i = 0; i < c.length; i++){
+      keyArr.push(c[i].trim());
+    };
+
     for(let i = 0; i < valArr.length; i++){
       let target = new Object();
       for(let j = 0; j < valArr[i].length; j++){
 
-        Object.defineProperty(target, c[j], {
+        Object.defineProperty(target, keyArr[j], {
           value: valArr[i][j],
           enumerable: true,
           writable: true,

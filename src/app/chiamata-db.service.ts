@@ -4,7 +4,7 @@ import { DatiDocumentoService } from './dati-documento.service';
 import { ConfigDocumentoService } from './config-documento.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment_dev';
-import { AuxiliaryService } from './auxiliary.service';
+// import { AuxiliaryService } from './auxiliary.service';
 
 
 export type campo = 
@@ -24,48 +24,63 @@ export type campo =
   | 'SUM' //num
   ;
 
-  export type repeatOpt = 'A' | 'F' | 'L';
+export interface Response {
+    Status: Status;
+    Result: template | [];
+}
+export type template = elemento[];
 
-  export interface elemento {
-    ID: number;
-    TEMPLATENAME: string;
-    FIELDDESCR: string;
-    FIELDTYPE: campo;
-    FIELDORDER: number,
-    GROUPBOX?: string,
-    GROUPRIF?: string,
-    POSX?: number;
-    POSY?: number;
-    WIDTH?: number;
-    HEIGHT?: number;
-    FIXVALUE?: string;
-    GRIDNAME?: string;
-    GRIDORDER?: number;
-    FONTNAME?: string;
-    FONTSIZE?: number;
-    FONTSTYLE?: string;
-    FONTCOLOR?: string;
-    FONTALIGN?: string;
-    BACKCOLOR?: string;
-    BORDER?: string;
-    BORDERCOLOR?: string;
-    RECORDSETNAME?: string;
-    FIELDNAME?: string;
-    FIELDSTYLE?: string;
-    REPEAT?: repeatOpt;
-    COND_FIELD?: string,
-    COND_VALUE?: string
-  };
+export interface elemento {
+  ID: number;
+  TEMPLATENAME: string;
+  FIELDDESCR: string;
+  FIELDTYPE: campo | string;
+  FIELDORDER: number,
+  GROUPBOX?: string,
+  GROUPRIF?: string,
+  POSX?: number;
+  POSY?: number;
+  WIDTH?: number;
+  HEIGHT?: number;
+  FIXVALUE?: string;
+  GRIDNAME?: string;
+  GRIDORDER?: number;
+  FONTNAME?: string;
+  FONTSIZE?: number;
+  FONTSTYLE?: string;
+  FONTCOLOR?: string;
+  FONTALIGN?: string;
+  BACKCOLOR?: string;
+  BORDER?: string;
+  BORDERCOLOR?: string;
+  RECORDSETNAME?: string;
+  FIELDNAME?: string;
+  FIELDSTYLE?: string;
+  REPEAT?: Repeat;
+  COND_FIELD?: string,
+  COND_VALUE?: string
+};
 
-  export interface recordSet {
-    nomeTemplate: string;
-    nomeRecordSet: string;
-    sql: string;
-    keyName: any;
-    keyValue: any;
-  };
-  
-  export type template = elemento[];
+export enum Fontalign {
+    Center = "center",
+    Left = "left",
+}
+
+export enum Group {
+    CLIFisc = "CLI_FISC",
+    Cliente = "CLIENTE",
+    Logo = "LOGO",
+}
+
+export enum Repeat {
+    A = "A",
+    F = "F",
+}
+
+export interface Status {
+    errorCode:        string;
+    errorDescription: string;
+}
 
 
 @Injectable({
@@ -75,50 +90,39 @@ export type campo =
 export class ChiamataDBService {
   /**Si occuperà di interfacciarsi con il DB e smistare dati agli altri services*/
 
-  private response!: any;
+  private docTemplate!: template;
 
   constructor(
     private http: HttpClient,
-    private aux: AuxiliaryService,
+    // private aux: AuxiliaryService,
   ) { }
-  
-  recuperaDati(p: {
-    templateName: string,
-    keyName: string,
-    keyVal: string}) {
+
+  get template(){
+    return this.docTemplate;
+  }
+
+  recuperaDati(p: string){
       /**chiamata al db coi parametri:
        *  nome template, nome chiave e valore chiave
        *  ritorna un'array di oggetti risposta*/
-      let request = this.http.get(`${environment.baseUrl}/stampe`,
+      return new Promise(resolve => {
+        
+      }, 
+      reject)
+      let request = this.http.post(`${environment.baseUrl}/stampe/getlayout`,
       {
-        headers:
-        {
-          TEMPLATENAME: p.templateName,
-          KEYNAME: p.keyName,
-          KEYVAL: p.keyVal
-        }
+        templateName: p
       });
-          
+         
       request.subscribe({
-        next: data => {
-          console.log(data);
-          this.response = data;
+        next: (data: any)=> {
+          // console.log('MY SUBSCRIPTION',data.Result);
+          this.docTemplate = data.Result;
         },
         error: e => {
           console.warn("non arriva risposta");
-          this.assignFakeResponse();
         }
-      })
-      
+      });
     }
 
-
-    assignFakeResponse(){
-      console.log('qui si assegna la risposta generata artificialmente');
-      this.response = this.aux.fakeResponse;
-    }
-
-    get responseData(){
-      return this.response;
-    } 
   }

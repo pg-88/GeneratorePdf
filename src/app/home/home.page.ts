@@ -32,7 +32,7 @@ export class HomePage {
    *    template per la preview
    */
 
-  private modello!: template;
+  private modello!: any;
   private recordset!: any;
 
 
@@ -52,32 +52,14 @@ export class HomePage {
     private aux: AuxiliaryService
   ) {}
 
-  set templateFromDb(params: {
-    templateName: string,
-    keyName: string,
-    keyVal: any
-  }){
-    /**recupera i dati e li assegna a template */
-    let m: any;
 
-    this.dbRequest.recuperaDati(params);
-    
-    console.log('Template in home.page.ts', this.dbRequest.responseData);
-  }
-
-
-
-  testRequestTemplate(){
-    this.templateFromDb = {
-      templateName: 'PREVENTIVI1',
-      keyName: 'NUMPRE',
-      keyVal: 103
-    }
-  }
-
-  generaDoc(){
+  generaDoc(templateName: string){
     /**Presi gli input dalla pagina, richiama il servizio Config
      * per generare gli oggetti di configurazione del documento */
+    // this.dbRequest.recuperaDati(templateName).then({});
+    this.modello = this.dbRequest.template;
+    console.log(this.modello)
+    this.listaElementi = this.dati.generaLista(this.modello);
   }
 
 }
