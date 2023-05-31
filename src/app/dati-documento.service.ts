@@ -132,9 +132,8 @@ export class DatiDocumentoService {
 
   generaLista(tem: template): ParametriElemento[] {
     /**Converte i dati per inserirli nell'interfaccia ParametriElemento
-     * ############################### ???????? ########################################
-     * conviene usare enum per campi tipo fieldType, TemplateName, repeat, group*... ???
-     *##################################################################################*/
+     *
+     */
 
     let u: ParametriElemento[] = []; 
     this.arrayDati = [];
