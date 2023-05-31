@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { GeneraDocumentoService } from '../genera-documento.service';
+import { GeometriaDocumentoService } from '../geometria-documento.service';
 import { ChiamataDBService, template } from '../chiamata-db.service';
-import { ConfigDocumentoService, PdfOption, autoTableOption } from '../config-documento.service';
-import { DatiDocumentoService } from '../dati-documento.service';
-import { jsPDF } from 'jspdf';
+import { Campo, DatiDocumentoService } from '../dati-documento.service';
+import { jsPDF, jsPDFOptions } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
-import { AuxiliaryService } from '../auxiliary.service';
+// import { AuxiliaryService } from '../auxiliary.service';
 
 
 
@@ -16,61 +15,64 @@ import { AuxiliaryService } from '../auxiliary.service';
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  /**inserimento dati per la richiesta al DB, 
-   * lancia la richiesta tramite il service dbRequest
-   * visualizza sulla pagina il risultato della chiamata
-   * permette di configurare qualche opzione di stile 
-   * genera il pdf tramite GeneraDocumento service
-   * 
-   * Args
-   *  - input: inizializzato con i campi di input della pagina
-   *    (ognuno col suo setter e getter) vengono popolati man mano 
-   *     che il form viene compilato dall'utente.
-   * 
-   *  - showPreview: booleano viene settato a true quando ci sono i dati
-   *    da mostrare per la creazione del doc.
-   * 
-   *  - datiGrezzi: contiene i dati recuperati dal DB, utilizzato dal
-   *    template per la preview
-   */
+  /** */
 
   private modello!: any;
   private recordset!: any;
 
-
-  private listaElementi!: any;
-  private listaOggetti!: any;
-
   private documento!: jsPDF;
 
-
-
-
   constructor(
-    private doc: GeneraDocumentoService,
-    private conf: ConfigDocumentoService,
+    private geom: GeometriaDocumentoService,
     private dati: DatiDocumentoService,
     private dbRequest: ChiamataDBService,
-    private aux: AuxiliaryService
+    // private aux: AuxiliaryService
   ) {}
 
 
   async generaDoc(templateName: string){
-    /**Presi gli input dalla pagina, richiama il servizio Config
-     * per generare gli oggetti di configurazione del documento */
-    // this.dbRequest.recuperaDati(templateName).then({});
+    /**Chiamata al DB per recuperare i parametri per la generazione del documento.
+     * Una volta ottenuta la risposta innesca a catena i metodi che portano alla
+     * generazione del documento.*/
+
     let prom = Promise.resolve(this.dbRequest.recuperaDati(templateName));
     prom.then(temp => {
-      // console.log('promessa mantenuta: ', temp);
       this.modello = temp;
-
       this.elaboraModello();
     });
   }
 
   elaboraModello(){
-    console.log('elaborazione start', this.modello);
-    this.dati.elementList = this.modello;
-  }
+    /**Inizializza elementList, che ordina e pulisce i dati, 
+     * e defineGeom che pre imposta gli spazi delle pagine*/
 
+    // console.log('elaborazione start', this.modello);
+    this.dati.elementList = this.modello;
+    let config = this.dati.arrayConfig;
+    let optn: jsPDFOptions = {
+      unit: 'mm', 
+      compress: false,
+    }
+    config.forEach(el => {
+      //assegno il formato del foglio se lo trovo
+      el.fieldType == Campo.PAGE_FORMAT ? 
+      (optn.format = el.fixValue?.toLocaleLowerCase()) :
+      el.fieldType == 'PAGE_FORMAT' ? 
+      optn.format = el.fixValue?.toLocaleLowerCase() : 
+      optn.format = 'a4';
+
+      // console.log(el.fieldType, typeof(el.fieldType), el.fixValue?.toLocaleLowerCase());
+
+      el.fieldType == Campo.PAGE_ORIENTATION ?? 
+      el.fixValue?.toLocaleLowerCase() == 'l' ? 
+      //se il campo è 'L' o 'l' assegna 'l'
+      optn.orientation = 'l' :
+      //se è P, p o qualsiasi altra cosa, assegna 'p'
+      optn.orientation = 'p';
+    })
+    
+    //Genera oggetto jsPDF da passare a GeometriaDocumento
+    this.documento = new jsPDF(optn);
+
+  }
 }

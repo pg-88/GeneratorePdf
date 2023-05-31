@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { ConfigDocumentoService } from './config-documento.service';
 import { DatiDocumentoService } from './dati-documento.service';
-import { GeometriaService, Layout } from './geometria.service';
 
 
 
@@ -12,7 +10,7 @@ import { GeometriaService, Layout } from './geometria.service';
 @Injectable({
   providedIn: 'root'
 })
-export class GeneraDocumentoService {
+export class GeometriaDocumentoService {
   /**Crea l'oggetto jsPDF, configura il foglio e salva o esporta il file
    * 
    * Viene richiamato dal component che crea il pdf (per ora home.page)
@@ -32,7 +30,6 @@ export class GeneraDocumentoService {
   private doc!: jsPDF;
   //oggetto geometria
   //private geom!: GeometriaService;//serve o mi basta un oggetto layout??
-  private layout!: Layout;
 
 
   test(){
@@ -53,26 +50,26 @@ export class GeneraDocumentoService {
 
     console.clear();
     // console.log('come si vede il layout da disegna rettangolo: ',this.layout);
-    Object.values(this.layout).forEach(section => {
-      for(let field in section){
-        console.log(field, section[`${field}`]?.dimensione);
-        const geom = section[`${field}`]?.dimensione;
-        let c = this.doc.canvas.getContext('2d');
-        // let ctx = this.doc.context2d
-        c.strokeStyle = "#FF9430";
-        c.strokeRect(geom[0], geom[1], geom[2], geom[3]);
-        c.fillStyle = '#990000';
-        c.textAlign = 'center';
-        c.font = '14px Arial'
-        // c.fillText(
-        //   field.toString(), 
-        //   (geom[0] + geom[2]/3), (geom[1] + geom[3] / 2)
-        // );
-        if(field.toString() == 'tabella'){
+    // Object.values(this.layout).forEach(section => {
+    //   for(let field in section){
+    //     console.log(field, section[`${field}`]?.dimensione);
+    //     const geom = section[`${field}`]?.dimensione;
+    //     let c = this.doc.canvas.getContext('2d');
+    //     // let ctx = this.doc.context2d
+    //     c.strokeStyle = "#FF9430";
+    //     c.strokeRect(geom[0], geom[1], geom[2], geom[3]);
+    //     c.fillStyle = '#990000';
+    //     c.textAlign = 'center';
+    //     c.font = '14px Arial'
+    //     // c.fillText(
+    //     //   field.toString(), 
+    //     //   (geom[0] + geom[2]/3), (geom[1] + geom[3] / 2)
+    //     // );
+    //     if(field.toString() == 'tabella'){
           
-        }
-      }
-    });
+    //     }
+    //   }
+    // });
   }
 
 
@@ -88,7 +85,6 @@ export class GeneraDocumentoService {
      *    che definisce le aree del foglio da popolare. */
     
     this.doc = new jsPDF(configDoc);
-    let geom = new GeometriaService();
     // this.geom.dimensioniPagna = this.doc;
   }
 

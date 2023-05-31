@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { template } from './chiamata-db.service';
-import { GeometriaService, coord } from './geometria.service';
 
 export interface ParametriElemento {
   id: number;
@@ -60,18 +59,27 @@ export enum Repeat {
 })
 
 export class DatiDocumentoService {
-  /** */
+  /**Viene richiamato dopo aver ricevuto i dati dal DB e li ripulisce e ordina*/
 
-  private arrayDati!: ParametriElemento[];
-  private arrayConfig!: ParametriElemento[];
+  private arrayDati!: ParametriElemento[]; //array con elementi stampabili
+  private arrayConf!: ParametriElemento[]; //elementi tipo pagina e grid
 
   constructor() { }
 
-  get elmentList(){
+  get arrayStampa(){
     return this.arrayDati;
   }
 
+  get arrayConfig(){
+    return this.arrayConf;
+  }
+
   generaLista(tem: template): ParametriElemento[] {
+    /**Converte i dati per inserirli nell'interfaccia ParametriElemento
+     * ############################### ???????? ########################################
+     * conviene usare enum per campi tipo fieldType, TemplateName, repeat, group*... ???
+     *##################################################################################*/
+
     let u: ParametriElemento[] = []; 
     this.arrayDati = [];
     // console.log('generazione lista', tem);
@@ -113,6 +121,11 @@ export class DatiDocumentoService {
   }
 
   set elementList(tem: template){
+    /**Invocato passando i dati in arrivo dal DB
+     * invoca genera lista quindi
+     * separa i parametri degli elementi da stampare dai
+     * parametri per la configurazione */
+
     let unsortedData: ParametriElemento[] = this.generaLista(tem);
     let unsorted: ParametriElemento[] = [];
     let noOrder: ParametriElemento[] = [];
@@ -125,16 +138,12 @@ export class DatiDocumentoService {
       if(el.fieldOrder != null) unsorted.push(el);
       else noOrder.push(el);
     });
-    console.log(noOrder);
-    this.arrayConfig = noOrder;
-    
+    this.arrayConf = noOrder;
+    //bubble sort    
     for(i = 0; i < unsorted.length; i++){
       swap = false;
       for(j = i +1; j < unsorted.length; j++){
         if(unsorted[i].fieldOrder > unsorted[j].fieldOrder){
-         console.log(
-          `scambare elementi ${unsorted[i].fieldOrder} e ${unsorted[j].fieldOrder}`
-          );
           tmp = unsorted[i];
           unsorted[i] = unsorted[j];
           unsorted[j] = tmp;

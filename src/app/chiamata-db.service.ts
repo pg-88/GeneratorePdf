@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GeometriaService, Layout } from './geometria.service';
 import { DatiDocumentoService } from './dati-documento.service';
-import { ConfigDocumentoService } from './config-documento.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment_dev';
 // import { AuxiliaryService } from './auxiliary.service';
@@ -118,7 +116,6 @@ export class ChiamataDBService {
             // console.log(Object.entries(data)[1][1]);
             Object.entries(data).forEach(v => {
               if(v[0] == 'Result'){
-                console.log('subscription',v[0], v[1]);
                 resolve(v[1]);
               }
             });
