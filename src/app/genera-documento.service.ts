@@ -90,14 +90,6 @@ export class GeneraDocumentoService {
     this.doc = new jsPDF(configDoc);
     let geom = new GeometriaService();
     // this.geom.dimensioniPagna = this.doc;
-    switch (template){
-      case 'ddt':
-        this.layout = geom.bollaTrasporto(this.doc);
-        break;
-      default:
-        console.log('default')
-        break;
-    }
   }
 
   titolo(){

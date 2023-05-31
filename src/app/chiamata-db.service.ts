@@ -4,7 +4,6 @@ import { DatiDocumentoService } from './dati-documento.service';
 import { ConfigDocumentoService } from './config-documento.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment_dev';
-import { error } from 'console';
 // import { AuxiliaryService } from './auxiliary.service';
 
 
@@ -35,7 +34,7 @@ export interface elemento {
   ID: number;
   TEMPLATENAME: string;
   FIELDDESCR: string;
-  FIELDTYPE: campo | string;
+  FIELDTYPE: campo ;
   FIELDORDER: number,
   GROUPBOX?: string,
   GROUPRIF?: string,
@@ -102,7 +101,7 @@ export class ChiamataDBService {
     return this.docTemplate;
   }
 
-  recuperaDati(p: string): Promise<template>{
+  async recuperaDati(p: string): Promise<template>{
       /**chiamata al db coi parametri:
        *  nome template, nome chiave e valore chiave
        *  ritorna un'array di oggetti risposta*/
@@ -111,11 +110,18 @@ export class ChiamataDBService {
         let header = {
           "templateName": "PREVENTIVI1",
         };
+        this.docTemplate = [];
 
-        let request = this.http.post(url, header, {observe: 'response'}).
+        let request = this.http.post(url, header, {observe: 'body'}).
         subscribe({
-          next: (data => {
-            console.log(data)
+          next: ((data: Object) => {
+            // console.log(Object.entries(data)[1][1]);
+            Object.entries(data).forEach(v => {
+              if(v[0] == 'Result'){
+                console.log('subscription',v[0], v[1]);
+                resolve(v[1]);
+              }
+            });
           }),
           error: (err => console.warn(err))
         });

@@ -8,6 +8,8 @@ import { autoTable } from 'jspdf-autotable';
 import { AuxiliaryService } from '../auxiliary.service';
 
 
+
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -53,13 +55,22 @@ export class HomePage {
   ) {}
 
 
-  generaDoc(templateName: string){
+  async generaDoc(templateName: string){
     /**Presi gli input dalla pagina, richiama il servizio Config
      * per generare gli oggetti di configurazione del documento */
     // this.dbRequest.recuperaDati(templateName).then({});
-    this.modello = this.dbRequest.template;
-    console.log(this.modello)
-    this.listaElementi = this.dati.generaLista(this.modello);
+    let prom = Promise.resolve(this.dbRequest.recuperaDati(templateName));
+    prom.then(temp => {
+      // console.log('promessa mantenuta: ', temp);
+      this.modello = temp;
+
+      this.elaboraModello();
+    });
+  }
+
+  elaboraModello(){
+    console.log('elaborazione start', this.modello);
+    this.dati.elementList = this.modello;
   }
 
 }
