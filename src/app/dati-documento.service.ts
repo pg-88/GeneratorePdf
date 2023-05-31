@@ -1,11 +1,55 @@
 import { Injectable } from '@angular/core';
-import { template } from './chiamata-db.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment_dev';
+
+export interface Response {
+  Status: Status;
+  Result: template | [];
+}
+
+export interface Status {
+  errorCode:        string;
+  errorDescription: string;
+}
+export type template = elemento[];
+
+export interface elemento {
+ID: number;
+TEMPLATENAME: string;
+FIELDDESCR: string;
+FIELDTYPE: string ;
+FIELDORDER: number,
+GROUPBOX?: string,
+GROUPRIF?: string,
+POSX?: number;
+POSY?: number;
+WIDTH?: number;
+HEIGHT?: number;
+FIXVALUE?: string;
+GRIDNAME?: string;
+GRIDORDER?: number;
+FONTNAME?: string;
+FONTSIZE?: number;
+FONTSTYLE?: string;
+FONTCOLOR?: string;
+FONTALIGN?: string;
+BACKCOLOR?: string;
+BORDER?: string;
+BORDERCOLOR?: string;
+RECORDSETNAME?: string;
+FIELDNAME?: string;
+FIELDSTYLE?: string;
+REPEAT?: string;
+COND_FIELD?: string,
+COND_VALUE?: string
+};
+
 
 export interface ParametriElemento {
   id: number;
   templateName: string;
   fieldDescr: string;
-  fieldType: Campo | string;
+  fieldType: string;
   fieldOrder: number,
   groupBox?: string,
   groupRif?: string,
@@ -27,32 +71,10 @@ export interface ParametriElemento {
   recordsetName?: string;
   fieldName?: string;
   fieldStyle?: string;
-  repeat?: Repeat;
-  condField?: string,
-  condValue?: string
+  repeat?: string;
+  condField?: string;
+  condValue?: string;
 };
-
-export enum Campo {
-  'CANVAS_BOX',
-  'CANVAS_LINE',
-  'LOGO',
-  'COLUMN',
-  'COLUMNTITLE',
-  'GRID',
-  'FIELD',
-  'FIELD_SUBTOT',
-  'FIELD_SUM',
-  'LABEL',
-  'PAGE_FORMAT',
-  'PAGE_ORIENTATION',
-  'PAGNUM',
-  'SUM',
-}
-
-export enum Repeat {
-  A = "A",
-  F = "F",
-}
 
 @Injectable({
   providedIn: 'root'
@@ -61,10 +83,44 @@ export enum Repeat {
 export class DatiDocumentoService {
   /**Viene richiamato dopo aver ricevuto i dati dal DB e li ripulisce e ordina*/
 
+  private docTemplate!: template; //dati grezzi in arrivo dal DB
   private arrayDati!: ParametriElemento[]; //array con elementi stampabili
   private arrayConf!: ParametriElemento[]; //elementi tipo pagina e grid
 
-  constructor() { }
+  constructor(
+    private http: HttpClient,
+  ) { }
+
+  get template(){
+    return this.docTemplate;
+  }
+
+  async recuperaDati(p: string): Promise<template>{
+    /**chiamata al db coi parametri:
+     *  nome template, nome chiave e valore chiave
+     *  ritorna un'array di oggetti risposta*/
+    return new Promise((resolve, reject)=> {
+      let url = `${environment.baseUrl}/stampe/getlayout`;
+      let header = {
+        "templateName": "PREVENTIVI1",
+      };
+      this.docTemplate = [];
+      this.http.post(url, header, {observe: 'body'}).subscribe({  
+        next: ((data) => {
+          Object.entries(data).forEach(v => {
+            if(v[0] == 'Result'){
+              resolve(v[1]);
+            }
+          });
+        }),
+        error: (err => {
+          console.warn(err)
+          reject(err);
+        }),
+      });
+    });
+  }
+
 
   get arrayStampa(){
     return this.arrayDati;

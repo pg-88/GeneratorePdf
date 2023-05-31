@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { GeometriaDocumentoService } from '../geometria-documento.service';
-import { ChiamataDBService, template } from '../chiamata-db.service';
-import { Campo, DatiDocumentoService } from '../dati-documento.service';
+import { DatiDocumentoService } from '../dati-documento.service';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
 // import { AuxiliaryService } from '../auxiliary.service';
@@ -25,7 +24,6 @@ export class HomePage {
   constructor(
     private geom: GeometriaDocumentoService,
     private dati: DatiDocumentoService,
-    private dbRequest: ChiamataDBService,
     // private aux: AuxiliaryService
   ) {}
 
@@ -35,8 +33,8 @@ export class HomePage {
      * Una volta ottenuta la risposta innesca a catena i metodi che portano alla
      * generazione del documento.*/
 
-    let prom = Promise.resolve(this.dbRequest.recuperaDati(templateName));
-    prom.then(temp => {
+    //let prom = Promise.resolve(this.dbRequest.recuperaDati(templateName));
+    this.dati.recuperaDati(templateName).then(temp => {
       this.modello = temp;
       this.elaboraModello();
     });
@@ -55,24 +53,28 @@ export class HomePage {
     }
     config.forEach(el => {
       //assegno il formato del foglio se lo trovo
-      el.fieldType == Campo.PAGE_FORMAT ? 
-      (optn.format = el.fixValue?.toLocaleLowerCase()) :
-      el.fieldType == 'PAGE_FORMAT' ? 
-      optn.format = el.fixValue?.toLocaleLowerCase() : 
-      optn.format = 'a4';
+      el.fieldType == 'PAGE_FORMAT' ??
+      (optn.format = el.fixValue?.toLocaleLowerCase());
 
-      // console.log(el.fieldType, typeof(el.fieldType), el.fixValue?.toLocaleLowerCase());
-
-      el.fieldType == Campo.PAGE_ORIENTATION ?? 
-      el.fixValue?.toLocaleLowerCase() == 'l' ? 
-      //se il campo è 'L' o 'l' assegna 'l'
-      optn.orientation = 'l' :
-      //se è P, p o qualsiasi altra cosa, assegna 'p'
-      optn.orientation = 'p';
+      //assegno l'orientamento pagina se lo trovo
+      el.fieldType == 'PAGE_ORIENTATION' ?? 
+      // (optn.orientation = el.fixValue?.toLocaleLowerCase());
+      console.log(el.fieldType == 'PAGE_ORIENTATION' ?? el.fixValue?.toLocaleLowerCase() == 'l' ? 'landscape': 'portrait');
     })
-    
+
     //Genera oggetto jsPDF da passare a GeometriaDocumento
     this.documento = new jsPDF(optn);
+    this.ottimizazionePagina()
+  }
+  
+  ottimizazionePagina(){
+    /**Rimanda a GeometriaDocumento l'oggetto di jsPDF e l'array degli elementi
+     * da stampare */
 
+    //###########################test documento#################
+    console.log(this.documento.output('datauristring'));
+    //##########################################################
+    console.log('roba da stampare: ',this.dati.arrayStampa);
+    this.geom.pagArea = this.documento;
   }
 }
