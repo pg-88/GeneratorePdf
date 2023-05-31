@@ -45,11 +45,9 @@ export class HomePage {
 
     // console.log('elaborazione start', this.modello);
     this.dati.elementList = this.modello;
-    let config = this.dati.arrayConfig;
-    console.log(this.dati.arrayConfig);
     let optn: jsPDFOptions = {}
-
-    config.forEach(el => {
+    
+    this.dati.arrayConfig.forEach(el => {
       //assegno il formato del foglio se lo trovo
       if(el.fieldType == "PAGE_FORMAT") {
         console.log(el.fixValue);
