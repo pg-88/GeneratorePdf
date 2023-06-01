@@ -185,28 +185,31 @@ export class DatiDocumentoService {
     let unsorted: ParametriElemento[] = [];
     let noOrder: ParametriElemento[] = [];
     //sorting secondo il field order (campi senza field order vanno alla fine)
-    let tmp, j, i : any;
-    let swap = false;
-
+    
     //creo una lista senza gli elementi che non hanno il fieldOrder
     unsortedData.forEach(el => {
       if(el.fieldOrder != null) unsorted.push(el);
       else noOrder.push(el);
     });
     this.arrayConf = noOrder;
+    console.log('non ordinati, stampabili: ', unsorted)
     //bubble sort    
-    for(i = 0; i < unsorted.length; i++){
+    let tmp: ParametriElemento, j: number, i: number;
+    let swap: boolean = false;
+
+    for(i = 0; i < unsorted.length - 1; i++){
       swap = false;
-      for(j = i +1; j < unsorted.length; j++){
-        if(unsorted[i].fieldOrder > unsorted[j].fieldOrder){
-          tmp = unsorted[i];
-          unsorted[i] = unsorted[j];
-          unsorted[j] = tmp;
-          swap = true
+      for(j = 0; j < unsorted.length - i - 1; j++){
+        if(unsorted[j].fieldOrder > (unsorted[(j+1)].fieldOrder)){
+          tmp = unsorted[j];
+          unsorted[j] = unsorted[j+1];
+          unsorted[j+1] = tmp;
+          swap = true;
         }
-        if(swap) break;
       }
+      if(!swap) break;
     }
+
     this.arrayDati = unsorted;
   }
 }
