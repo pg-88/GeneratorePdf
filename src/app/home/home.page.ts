@@ -30,8 +30,13 @@ export class HomePage {
     /**Chiamata al DB per recuperare i parametri per la generazione del documento.
      * Una volta ottenuta la risposta innesca a catena i metodi che portano alla
      * generazione del documento.*/
+<<<<<<< HEAD
 
     this.dati.recuperaDati(templateName).then(temp => {
+=======
+    //let prom = Promise.resolve(this.dbRequest.recuperaDati(templateName));
+    this.dati.recuperaDati(templateName).then(async temp => {
+>>>>>>> f6600e16f25a02a50b07e5eba72eb46b9c399033
       this.modello = temp;
       this.elaboraModello();
     });
@@ -42,6 +47,7 @@ export class HomePage {
      * e defineGeom che pre imposta gli spazi delle pagine*/
 
     // console.log('elaborazione start', this.modello);
+<<<<<<< HEAD
     this.dati.setElementList = this.modello;
     let config = this.dati.arrayConfig;
     let optn: jsPDFOptions = {
@@ -49,15 +55,22 @@ export class HomePage {
       compress: false,
     }
     config.forEach(el => {
+=======
+    this.dati.elementList = this.modello;
+    let optn: jsPDFOptions = {}
+    
+    this.dati.arrayConfig.forEach(el => {
+>>>>>>> f6600e16f25a02a50b07e5eba72eb46b9c399033
       //assegno il formato del foglio se lo trovo
-      el.fieldType == 'PAGE_FORMAT' ??
-      (optn.format = el.fixValue?.toLocaleLowerCase());
-
+      if(el.fieldType == "PAGE_FORMAT") {
+        console.log(el.fixValue);
+        optn.format = el.fixValue?.toLowerCase();
+      }
       //assegno l'orientamento pagina se lo trovo
-      el.fieldType == 'PAGE_ORIENTATION' ?? 
-      // (optn.orientation = el.fixValue?.toLocaleLowerCase());
-      console.log(el.fieldType == 'PAGE_ORIENTATION' ?? el.fixValue?.toLocaleLowerCase() == 'l' ? 'landscape': 'portrait');
-    })
+      if(el.fieldType == 'PAGE_ORIENTATION'){
+        optn.orientation = el.fixValue?.toLowerCase() == 'l' ? 'landscape': 'portrait';
+      }
+    });
 
     //Genera oggetto jsPDF da passare a GeometriaDocumento
     this.documento = new jsPDF(optn);
@@ -71,7 +84,12 @@ export class HomePage {
     //###########################test documento#################
     console.log(this.documento.output('datauristring'));
     //##########################################################
+<<<<<<< HEAD
     console.log('roba da stampare: ',this.dati.arrayStampa);
     this.geom.setPagArea = this.documento;
+=======
+    // console.log('roba da stampare: ',this.dati.arrayStampa);
+    this.geom.pagArea = this.documento;
+>>>>>>> f6600e16f25a02a50b07e5eba72eb46b9c399033
   }
 }
