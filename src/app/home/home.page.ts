@@ -49,7 +49,6 @@ export class HomePage {
     this.dati.arrayConfig.forEach(el => {
       //assegno il formato del foglio se lo trovo
       if(el.fieldType == "PAGE_FORMAT") {
-        console.log(el.fixValue);
         optn.format = el.fixValue?.toLowerCase();
       }
       //assegno l'orientamento pagina se lo trovo
@@ -72,5 +71,6 @@ export class HomePage {
     //##########################################################
     console.log('roba da stampare: ',this.dati.arrayStampa);
     this.geom.setPagArea = this.documento;
+    this.geom.setListaStampa = this.dati.arrayStampa; 
   }
 }
