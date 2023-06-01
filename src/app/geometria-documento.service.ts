@@ -2,11 +2,21 @@ import { Injectable } from '@angular/core';
 import { jsPDF, TextOptionsLight } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ParametriElemento } from './dati-documento.service';
-import { JsonPipe } from '@angular/common';
 
 export type Coord = [x: number, y: number];
 
-class Area{
+export interface TextConfig{
+//contiene i parametri per il testo che non sono in TextOptionLight
+//e richiedono un metodo a parte per il settaggio
+  fontName: string,
+  fontStyle: string | TextStyle,
+  fontSize: number,
+  fontColor: string
+}
+
+export type TextStyle = 'bold' | 'italic' | 'normal'
+
+export class Area{
   private x: number;
   private y: number;
   private w: number;
@@ -45,16 +55,20 @@ class Area{
 
     return (ascisse && ordinate);
   }
-
 }
 
 class FieldType{
   private spazio: Area;
   protected doc: jsPDF;
-  private gruppo!: string;
-  private rif?: string; //rappresenta il vincolo (sulla posizione) a un altro gruppo.
-  constructor(pos: Area, doc: jsPDF){
-    this.spazio = pos;
+  public gruppo?: string;
+  public rif?: string; //rappresenta il vincolo (sulla posizione) a un altro gruppo.
+  constructor(
+    spazio: Area, 
+    doc: jsPDF, 
+    gruppo?: string,
+    rif?: string,
+    ){
+    this.spazio = spazio;
     this.doc = doc;
   }
 
@@ -91,12 +105,20 @@ class FieldType{
 
 class Label extends FieldType {
   private text: string;
-  private option: TextOptionsLight;
+  private conf?: TextConfig;
+  private option?: TextOptionsLight;
 
-  constructor(pos: Area, doc: jsPDF, testo: string, opt: TextOptionsLight){
+  constructor(
+    pos: Coord,
+    doc: jsPDF,
+    testo: string,
+    txtConf?: TextConfig,
+    opt?: TextOptionsLight){
     //ottenere altezza del testo: jsPDFobject.getTextDimensions()
-    super(pos, doc);
+    let area: Area = new Area(pos[0], pos[1], doc.getTextDimensions(testo, opt).w, doc.getTextDimensions(testo, opt).h);
+    super(area, doc);
     this.text = testo;
+    this.conf = txtConf;
     this.option = opt;
   }
 
@@ -104,7 +126,6 @@ class Label extends FieldType {
     //calcolo lo spazio occupato dal testo
     const w = this.doc.getTextDimensions(this.text, this.option).w
     const h = this.doc.getTextDimensions(this.text, this.option).h
-    // let txtArea: Area = 
   }
 }
 
@@ -121,8 +142,10 @@ export class GeometriaDocumentoService {
    * inserire i dati e creare la tabella (dati doc).
    */
 
+  private pdf!: jsPDF;
   private freeArea!: Area;
-  private arrayStampa: ParametriElemento[] = [];
+  // private arrayStampa!: ParametriElemento[];
+  private arrayStampa!: Array<FieldType>;
   private usedArea!: Array<Area>; //array che contiene tutte le aree occupate dagli elementi
   //per aggiornare la usedArea bisogna prima controllare che ci sia spazio nella pagina e
   //che non ci sia sovrapposizione con le aree già inserite
@@ -137,10 +160,41 @@ export class GeometriaDocumentoService {
     const w = (doc.internal.pageSize.width - this.MARGIN_W).toPrecision(5);
     const h = (doc.internal.pageSize.height - this.MARGIN_H).toPrecision(5);
     this.freeArea = new Area(this.MARGIN_W, this.MARGIN_H, Number(w), Number(h));
+    this.pdf = doc;
   }
 
-  set listaStampa(lst: ParametriElemento[]){
-    this.arrayStampa
+  set setListaStampa(lst: ParametriElemento[]){
+    /**Popola array stampa con oggetti del tipo consono*/
+    lst.forEach(el => {
+      switch (el.fieldType) {
+        case 'LABEL':
+
+          let pos: Coord = [
+            el.posX!,
+            el.posY != null ? el.posY : 0
+            //se non definita dipende da un rif a gruppo
+            //viene aggiornata quando la lista è completa
+          ]
+          let opt: TextOptionsLight = {
+            
+          }
+          this.arrayStampa.push(
+            // new Label(
+            //   pos, 
+            //   this.pdf, 
+            //   el.fixValue!,
+            //   el.fontName,
+            //   el.fontSize
+            //   )
+          )
+
+          
+          break;
+      
+        default:
+          break;
+      }
+    })
   }
 
 }
