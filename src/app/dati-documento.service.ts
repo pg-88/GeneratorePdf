@@ -176,7 +176,7 @@ export class DatiDocumentoService {
     return u;
   }
 
-  set elementList(tem: template){
+  set setElementList(tem: template){
     /**Invocato passando i dati in arrivo dal DB
      * invoca genera lista quindi
      * separa i parametri degli elementi da stampare dai

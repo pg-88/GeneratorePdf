@@ -17,8 +17,6 @@ export class HomePage {
   /** */
 
   private modello!: any;
-  private recordset!: any;
-
   private documento!: jsPDF;
 
   constructor(
@@ -33,7 +31,6 @@ export class HomePage {
      * Una volta ottenuta la risposta innesca a catena i metodi che portano alla
      * generazione del documento.*/
 
-    //let prom = Promise.resolve(this.dbRequest.recuperaDati(templateName));
     this.dati.recuperaDati(templateName).then(temp => {
       this.modello = temp;
       this.elaboraModello();
@@ -45,7 +42,7 @@ export class HomePage {
      * e defineGeom che pre imposta gli spazi delle pagine*/
 
     // console.log('elaborazione start', this.modello);
-    this.dati.elementList = this.modello;
+    this.dati.setElementList = this.modello;
     let config = this.dati.arrayConfig;
     let optn: jsPDFOptions = {
       unit: 'mm', 
@@ -75,6 +72,6 @@ export class HomePage {
     console.log(this.documento.output('datauristring'));
     //##########################################################
     console.log('roba da stampare: ',this.dati.arrayStampa);
-    this.geom.pagArea = this.documento;
+    this.geom.setPagArea = this.documento;
   }
 }
