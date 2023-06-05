@@ -3,9 +3,6 @@ import { GeometriaDocumentoService } from '../geometria-documento.service';
 import { DatiDocumentoService } from '../dati-documento.service';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
-// import { AuxiliaryService } from '../auxiliary.service';
-
-
 
 
 @Component({
@@ -66,11 +63,11 @@ export class HomePage {
     /**Rimanda a GeometriaDocumento l'oggetto di jsPDF e l'array degli elementi
      * da stampare */
 
-    //###########################test documento#################
-    console.log(this.documento.output('datauristring'));
-    //##########################################################
     console.log('roba da stampare: ',this.dati.arrayStampa);
     this.geom.setPagArea = this.documento;
     this.geom.setListaStampa = this.dati.arrayStampa; 
+    //###########################test documento#################
+    console.log(this.documento.output('datauristring'));
+    //##########################################################
   }
 }
