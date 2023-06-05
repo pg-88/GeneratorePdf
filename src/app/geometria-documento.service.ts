@@ -3,7 +3,6 @@ import { jsPDF, TextOptionsLight } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ParametriElemento } from './dati-documento.service';
 
-
 export type Coord = [x: number, y: number];
 
 export interface TextConfig{
@@ -169,17 +168,16 @@ class Label extends FieldType {
     opt?: TextOptionsLight,
     group?: string,
     rif?: string){
+    console.log('dimensione testo: ', doc.getTextDimensions(testo, {fontSize: txtConf?.fontSize}))
 
-    let txtDimension = doc.getTextDimensions(testo,{
-      font: txtConf?.fontName,
-      fontSize: txtConf?.fontSize});
 
     let area: Area = new Area(
-      pos[0], 
-      pos[1], 
-      txtDimension.w, 
-      txtDimension.h
+      pos[0],
+      pos[1],
+      doc.getTextDimensions(testo, {fontSize: txtConf?.fontSize!}).w,
+      doc.getTextDimensions(testo, {fontSize: txtConf?.fontSize!}).h,
       );
+    // let area = new Area(0,0,0,0)
     super(area, doc, group, rif);
     this.text = testo;
     this.conf = txtConf;
