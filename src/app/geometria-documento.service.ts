@@ -299,6 +299,8 @@ export class GeometriaDocumentoService {
         this.arrayStampa[i+1].spazio.setStartY = this.arrayStampa[i].spazio.getPoints[3][1];
       }
       this.usedArea.push(this.arrayStampa[i].spazio);
+
+      //Rettangoli debug##############################################################
       this.usedArea.forEach(area => {
         this.pdf.rect(area.getStartX, area.getStartY, area.getWidth, area.getHeigth);
       });
@@ -320,12 +322,5 @@ export class GeometriaDocumentoService {
     this.arrayStampa.forEach(el => {
       el.scrivi();   
     });
-  // //disegno rettangoli per debug
-  //   this.usedArea.forEach(a => {
-  //     this.pdf.setDrawColor(100);
-  //     console.log('area già occupata',a);
-  //     this.pdf.rect(a.getStartX, a.getStartY, a.getWidth, a.getHeigth);
-  //   });
-  //   console.log('test scrittura documento ', this.pdf);
   }
 }
