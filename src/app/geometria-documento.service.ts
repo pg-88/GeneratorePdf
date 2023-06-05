@@ -169,8 +169,17 @@ class Label extends FieldType {
     opt?: TextOptionsLight,
     group?: string,
     rif?: string){
-    //ottenere altezza del testo: jsPDFobject.getTextDimensions()
-    let area: Area = new Area(pos[0], pos[1], doc.getTextDimensions(testo, opt).w, doc.getTextDimensions(testo, opt).h);
+
+    let txtDimension = doc.getTextDimensions(testo,{
+      font: txtConf?.fontName,
+      fontSize: txtConf?.fontSize});
+
+    let area: Area = new Area(
+      pos[0], 
+      pos[1], 
+      txtDimension.w, 
+      txtDimension.h
+      );
     super(area, doc, group, rif);
     this.text = testo;
     this.conf = txtConf;
@@ -294,7 +303,7 @@ export class GeometriaDocumentoService {
       this.usedArea.push(this.arrayStampa[i].spazio);
       this.usedArea.forEach(area => {
         this.pdf.rect(area.getStartX, area.getStartY, area.getWidth, area.getHeigth);
-      })
+      });
     }
     console.log('area occupata', this.usedArea);
     this.inizializzaGruppi();
